@@ -734,3 +734,2261 @@ classifications = classifier(probabilities)
 our_acc = accuracy(classifications,labels.flatten())
 print 'Our score: ',our_acc
 
+You need to know some basic calculus in order to understand how functions change over time (derivatives), and to calculate the total amount of a quantity that accumulates over a time period (integrals). The language of calculus will allow you to speak precisely about the properties of functions and better understand their behaviour.
+
+Normally taking a calculus course involves doing lots of tedious calculations by hand, but having the power of computers on your side can make the process much more fun. This section describes the key ideas of calculus which you’ll need to know to understand machine learning concepts.
+
+Derivatives
+A derivative can be defined in two ways:
+
+Instantaneous rate of change (Physics)
+Slope of a line at a specific point (Geometry)
+Both represent the same principle, but for our purposes it’s easier to explain using the geometric definition.
+
+Geometric definition
+In geometry slope represents the steepness of a line. It answers the question: how much does 𝑦y or 𝑓(𝑥)f(x) change given a specific change in 𝑥x?
+
+_images/slope_formula.png
+Using this definition we can easily calculate the slope between two points. But what if I asked you, instead of the slope between two points, what is the slope at a single point on the line? In this case there isn’t any obvious “rise-over-run” to calculate. Derivatives help us answer this question.
+
+A derivative outputs an expression we can use to calculate the instantaneous rate of change, or slope, at a single point on a line. After solving for the derivative you can use it to calculate the slope at every other point on the line.
+
+Taking the derivative
+Consider the graph below, where 𝑓(𝑥)=𝑥2+3f(x)=x2+3.
+
+_images/calculus_slope_intro.png
+The slope between (1,4) and (3,12) would be:
+
+𝑠𝑙𝑜𝑝𝑒=𝑦2−𝑦1𝑥2−𝑥1=12−43−1=4
+slope=y2−y1x2−x1=12−43−1=4
+But how do we calculate the slope at point (1,4) to reveal the change in slope at that specific point?
+
+One way would be to find the two nearest points, calculate their slopes relative to 𝑥x and take the average. But calculus provides an easier, more precise way: compute the derivative. Computing the derivative of a function is essentially the same as our original proposal, but instead of finding the two closest points, we make up an imaginary point an infinitesimally small distance away from 𝑥x and compute the slope between 𝑥x and the new point.
+
+In this way, derivatives help us answer the question: how does 𝑓(𝑥)f(x) change if we make a very very tiny increase to x? In other words, derivatives help estimate the slope between two points that are an infinitesimally small distance away from each other. A very, very, very small distance, but large enough to calculate the slope.
+
+In math language we represent this infinitesimally small increase using a limit. A limit is defined as the output value a function approaches as the input value approaches another value. In our case the target value is the specific point at which we want to calculate slope.
+
+Step-by-step
+Calculating the derivative is the same as calculating normal slope, however in this case we calculate the slope between our point and a point infinitesimally close to it. We use the variable ℎh to represent this infinitesimally distance. Here are the steps:
+
+Given the function:
+𝑓(𝑥)=𝑥2
+f(x)=x2
+Increment 𝑥x by a very small value ℎ(ℎ=Δ𝑥)h(h=Δx)
+𝑓(𝑥+ℎ)=(𝑥+ℎ)2
+f(x+h)=(x+h)2
+Apply the slope formula
+𝑓(𝑥+ℎ)−𝑓(𝑥)ℎ
+f(x+h)−f(x)h
+Simplify the equation
+𝑥2+2𝑥ℎ+ℎ2−𝑥2ℎ2𝑥ℎ+ℎ2ℎ=2𝑥+ℎ
+x2+2xh+h2−x2h2xh+h2h=2x+h
+Set ℎh to 0 (the limit as ℎh heads toward 0)
+2𝑥+0=2𝑥
+2x+0=2x
+So what does this mean? It means for the function 𝑓(𝑥)=𝑥2f(x)=x2, the slope at any point equals 2𝑥2x. The formula is defined as:
+
+limℎ→0𝑓(𝑥+ℎ)−𝑓(𝑥)ℎ
+limh→0f(x+h)−f(x)h
+Code
+
+Let’s write code to calculate the derivative of any function 𝑓(𝑥)f(x). We test our function works as expected on the input 𝑓(𝑥)=𝑥2f(x)=x2 producing a value close to the actual derivative 2𝑥2x.
+
+def get_derivative(func, x):
+    """Compute the derivative of `func` at the location `x`."""
+    h = 0.0001                          # step size
+    return (func(x+h) - func(x)) / h    # rise-over-run
+
+def f(x): return x**2                   # some test function f(x)=x^2
+x = 3                                   # the location of interest
+computed = get_derivative(f, x)
+actual = 2*x
+
+computed, actual   # = 6.0001, 6        # pretty close if you ask me...
+In general it’s preferable to use the math to obtain exact derivative formulas, but keep in mind you can always compute derivatives numerically by computing the rise-over-run for a “small step” ℎh.
+
+Machine learning use cases
+Machine learning uses derivatives in optimization problems. Optimization algorithms like gradient descent use derivatives to decide whether to increase or decrease weights in order to maximize or minimize some objective (e.g. a model’s accuracy or error functions). Derivatives also help us approximate nonlinear functions as linear functions (tangent lines), which have constant slopes. With a constant slope we can decide whether to move up or down the slope (increase or decrease our weights) to get closer to the target value (class label).
+
+Chain rule
+The chain rule is a formula for calculating the derivatives of composite functions. Composite functions are functions composed of functions inside other function(s).
+
+How It Works
+Given a composite function 𝑓(𝑥)=𝐴(𝐵(𝑥))f(x)=A(B(x)), the derivative of 𝑓(𝑥)f(x) equals the product of the derivative of 𝐴A with respect to 𝐵(𝑥)B(x) and the derivative of 𝐵B with respect to 𝑥x.
+
+composite function derivative=outer function derivative∗inner function derivative
+composite function derivative=outer function derivative∗inner function derivative
+For example, given a composite function 𝑓(𝑥)f(x), where:
+
+𝑓(𝑥)=ℎ(𝑔(𝑥))
+f(x)=h(g(x))
+The chain rule tells us that the derivative of 𝑓(𝑥)f(x) equals:
+
+𝑑𝑓𝑑𝑥=𝑑ℎ𝑑𝑔⋅𝑑𝑔𝑑𝑥
+dfdx=dhdg⋅dgdx
+Step-by-step
+Say 𝑓(𝑥)f(x) is composed of two functions ℎ(𝑥)=𝑥3h(x)=x3 and 𝑔(𝑥)=𝑥2g(x)=x2. And that:
+
+𝑓(𝑥)=ℎ(𝑔(𝑥))=(𝑥2)3
+f(x)=h(g(x))=(x2)3
+The derivative of 𝑓(𝑥)f(x) would equal:
+
+𝑑𝑓𝑑𝑥=𝑑ℎ𝑑𝑔𝑑𝑔𝑑𝑥=𝑑ℎ𝑑(𝑥2)𝑑𝑔𝑑𝑥
+dfdx=dhdgdgdx=dhd(x2)dgdx
+Steps
+
+Solve for the inner derivative of 𝑔(𝑥)=𝑥2g(x)=x2
+𝑑𝑔𝑑𝑥=2𝑥
+dgdx=2x
+Solve for the outer derivative of ℎ(𝑥)=𝑥3h(x)=x3, using a placeholder 𝑏b to represent the inner function 𝑥2x2
+𝑑ℎ𝑑𝑏=3𝑏2
+dhdb=3b2
+Swap out the placeholder variable (b) for the inner function (g(x))
+3(𝑥2)23𝑥4
+3(x2)23x4
+Return the product of the two derivatives
+3𝑥4⋅2𝑥=6𝑥5
+3x4⋅2x=6x5
+Multiple functions
+In the above example we assumed a composite function containing a single inner function. But the chain rule can also be applied to higher-order functions like:
+
+𝑓(𝑥)=𝐴(𝐵(𝐶(𝑥)))
+f(x)=A(B(C(x)))
+The chain rule tells us that the derivative of this function equals:
+
+𝑑𝑓𝑑𝑥=𝑑𝐴𝑑𝐵𝑑𝐵𝑑𝐶𝑑𝐶𝑑𝑥
+dfdx=dAdBdBdCdCdx
+We can also write this derivative equation 𝑓′f′ notation:
+
+𝑓′=𝐴′(𝐵(𝐶(𝑥))⋅𝐵′(𝐶(𝑥))⋅𝐶′(𝑥)
+f′=A′(B(C(x))⋅B′(C(x))⋅C′(x)
+Steps
+
+Given the function 𝑓(𝑥)=𝐴(𝐵(𝐶(𝑥)))f(x)=A(B(C(x))), lets assume:
+
+𝐴(𝑥)𝐵(𝑥)𝐶(𝑥)=𝑠𝑖𝑛(𝑥)=𝑥2=4𝑥
+A(x)=sin(x)B(x)=x2C(x)=4x
+The derivatives of these functions would be:
+
+𝐴′(𝑥)𝐵′(𝑥)𝐶′(𝑥)=𝑐𝑜𝑠(𝑥)=2𝑥=4
+A′(x)=cos(x)B′(x)=2xC′(x)=4
+We can calculate the derivative of 𝑓(𝑥)f(x) using the following formula:
+
+𝑓′(𝑥)=𝐴′((4𝑥)2)⋅𝐵′(4𝑥)⋅𝐶′(𝑥)
+f′(x)=A′((4x)2)⋅B′(4x)⋅C′(x)
+We then input the derivatives and simplify the expression:
+
+𝑓′(𝑥)=𝑐𝑜𝑠((4𝑥)2)⋅2(4𝑥)⋅4=𝑐𝑜𝑠(16𝑥2)⋅8𝑥⋅4=𝑐𝑜𝑠(16𝑥2)32𝑥
+f′(x)=cos((4x)2)⋅2(4x)⋅4=cos(16x2)⋅8x⋅4=cos(16x2)32x
+Gradients
+A gradient is a vector that stores the partial derivatives of multivariable functions. It helps us calculate the slope at a specific point on a curve for functions with multiple independent variables. In order to calculate this more complex slope, we need to isolate each variable to determine how it impacts the output on its own. To do this we iterate through each of the variables and calculate the derivative of the function after holding all other variables constant. Each iteration produces a partial derivative which we store in the gradient.
+
+Partial derivatives
+In functions with 2 or more variables, the partial derivative is the derivative of one variable with respect to the others. If we change 𝑥x, but hold all other variables constant, how does 𝑓(𝑥,𝑧)f(x,z) change? That’s one partial derivative. The next variable is 𝑧z. If we change 𝑧z but hold 𝑥x constant, how does 𝑓(𝑥,𝑧)f(x,z) change? We store partial derivatives in a gradient, which represents the full derivative of the multivariable function.
+
+Step-by-step
+Here are the steps to calculate the gradient for a multivariable function:
+
+Given a multivariable function
+𝑓(𝑥,𝑧)=2𝑧3𝑥2
+f(x,z)=2z3x2
+Calculate the derivative with respect to 𝑥x
+𝑑𝑓𝑑𝑥(𝑥,𝑧)
+dfdx(x,z)
+Swap 2𝑧32z3 with a constant value 𝑏b
+𝑓(𝑥,𝑧)=𝑏𝑥2
+f(x,z)=bx2
+Calculate the derivative with 𝑏b constant
+𝑑𝑓𝑑𝑥=limℎ→0𝑓(𝑥+ℎ)−𝑓(𝑥)ℎ=limℎ→0𝑏(𝑥+ℎ)2−𝑏(𝑥2)ℎ=limℎ→0𝑏((𝑥+ℎ)(𝑥+ℎ))−𝑏𝑥2ℎ=limℎ→0𝑏((𝑥2+𝑥ℎ+ℎ𝑥+ℎ2))−𝑏𝑥2ℎ=limℎ→0𝑏𝑥2+2𝑏𝑥ℎ+𝑏ℎ2−𝑏𝑥2ℎ=limℎ→02𝑏𝑥ℎ+𝑏ℎ2ℎ=limℎ→02𝑏𝑥+𝑏ℎ
+dfdx=limh→0f(x+h)−f(x)h=limh→0b(x+h)2−b(x2)h=limh→0b((x+h)(x+h))−bx2h=limh→0b((x2+xh+hx+h2))−bx2h=limh→0bx2+2bxh+bh2−bx2h=limh→02bxh+bh2h=limh→02bx+bh
+As ℎ—>0h—>0…
+
+2bx + 0
+Swap 2𝑧32z3 back into the equation, to find the derivative with respect to 𝑥x.
+𝑑𝑓𝑑𝑥(𝑥,𝑧)=2(2𝑧3)𝑥=4𝑧3𝑥
+dfdx(x,z)=2(2z3)x=4z3x
+Repeat the above steps to calculate the derivative with respect to 𝑧z
+𝑑𝑓𝑑𝑧(𝑥,𝑧)=6𝑥2𝑧2
+dfdz(x,z)=6x2z2
+Store the partial derivatives in a gradient
+∇𝑓(𝑥,𝑧)=[𝑑𝑓𝑑𝑥𝑑𝑓𝑑𝑧]=[4𝑧3𝑥6𝑥2𝑧2]
+∇f(x,z)=[dfdxdfdz]=[4z3x6x2z2]
+Directional derivatives
+Another important concept is directional derivatives. When calculating the partial derivatives of multivariable functions we use our old technique of analyzing the impact of infinitesimally small increases to each of our independent variables. By increasing each variable we alter the function output in the direction of the slope.
+
+But what if we want to change directions? For example, imagine we’re traveling north through mountainous terrain on a 3-dimensional plane. The gradient we calculated above tells us we’re traveling north at our current location. But what if we wanted to travel southwest? How can we determine the steepness of the hills in the southwest direction? Directional derivatives help us find the slope if we move in a direction different from the one specified by the gradient.
+
+Math
+
+The directional derivative is computed by taking the dot product [11] of the gradient of 𝑓f and a unit vector 𝑣⃗ v→ of “tiny nudges” representing the direction. The unit vector describes the proportions we want to move in each direction. The output of this calculation is a scalar number representing how much 𝑓f will change if the current input moves with vector 𝑣⃗ v→.
+
+Let’s say you have the function 𝑓(𝑥,𝑦,𝑧)f(x,y,z) and you want to compute its directional derivative along the following vector [2]:
+
+𝑣⃗ =⎡⎣⎢⎢23−1⎤⎦⎥⎥
+v→=[23−1]
+As described above, we take the dot product of the gradient and the directional vector:
+
+⎡⎣⎢⎢⎢⎢𝑑𝑓𝑑𝑥𝑑𝑓𝑑𝑦𝑑𝑓𝑑𝑧⎤⎦⎥⎥⎥⎥⋅⎡⎣⎢⎢23−1⎤⎦⎥⎥
+[dfdxdfdydfdz]⋅[23−1]
+We can rewrite the dot product as:
+
+∇𝑣⃗ 𝑓=2𝑑𝑓𝑑𝑥+3𝑑𝑓𝑑𝑦−1𝑑𝑓𝑑𝑧
+∇v→f=2dfdx+3dfdy−1dfdz
+This should make sense because a tiny nudge along 𝑣⃗ v→ can be broken down into two tiny nudges in the x-direction, three tiny nudges in the y-direction, and a tiny nudge backwards, by −1 in the z-direction.
+
+Useful properties
+There are two additional properties of gradients that are especially useful in deep learning. The gradient of a function:
+
+Always points in the direction of greatest increase of a function (explained here)
+Is zero at a local maximum or local minimum
+Integrals
+The integral of 𝑓(𝑥)f(x) corresponds to the computation of the area under the graph of 𝑓(𝑥)f(x). The area under 𝑓(𝑥)f(x) between the points 𝑥=𝑎x=a and 𝑥=𝑏x=b is denoted as follows:
+
+𝐴(𝑎,𝑏)=∫𝑏𝑎𝑓(𝑥)𝑑𝑥.
+A(a,b)=∫abf(x)dx.
+_images/integral_definition.png
+The area 𝐴(𝑎,𝑏)A(a,b) is bounded by the function 𝑓(𝑥)f(x) from above, by the 𝑥x-axis from below, and by two vertical lines at 𝑥=𝑎x=a and 𝑥=𝑏x=b. The points 𝑥=𝑎x=a and 𝑥=𝑏x=b are called the limits of integration. The ∫∫ sign comes from the Latin word summa. The integral is the “sum” of the values of 𝑓(𝑥)f(x) between the two limits of integration.
+
+The integral function 𝐹(𝑐)F(c) corresponds to the area calculation as a function of the upper limit of integration:
+
+𝐹(𝑐)≡∫𝑐0𝑓(𝑥)𝑑𝑥.
+F(c)≡∫0cf(x)dx.
+There are two variables and one constant in this formula. The input variable 𝑐c describes the upper limit of integration. The integration variable 𝑥x performs a sweep from 𝑥=0x=0 until 𝑥=𝑐x=c. The constant 00 describes the lower limit of integration. Note that choosing 𝑥=0x=0 for the starting point of the integral function was an arbitrary choice.
+
+The integral function 𝐹(𝑐)F(c) contains the “precomputed” information about the area under the graph of 𝑓(𝑥)f(x). The derivative function 𝑓′(𝑥)f′(x) tells us the “slope of the graph” property of the function 𝑓(𝑥)f(x) for all values of 𝑥x. Similarly, the integral function 𝐹(𝑐)F(c) tells us the “area under the graph” property of the function 𝑓(𝑥)f(x) for all possible limits of integration.
+
+The area under 𝑓(𝑥)f(x) between 𝑥=𝑎x=a and 𝑥=𝑏x=b is obtained by calculating the change in the integral function as follows:
+
+𝐴(𝑎,𝑏)=∫𝑏𝑎𝑓(𝑥)𝑑𝑥=𝐹(𝑏)−𝐹(𝑎).
+A(a,b)=∫abf(x)dx=F(b)−F(a).
+_images/integral_as_change_in_antriderivative.png
+Computing integrals
+We can approximate the total area under the function 𝑓(𝑥)f(x) between 𝑥=𝑎x=a and 𝑥=𝑏x=b by splitting the region into tiny vertical strips of width ℎh, then adding up the areas of the rectangular strips. The figure below shows how to compute the area under 𝑓(𝑥)=𝑥2f(x)=x2 between 𝑥=1x=1 and 𝑥=3x=3 by approximating it as four rectangular strips of width ℎ=0.5h=0.5.
+
+_images/integral_as_rectangular_strips.png
+Usually we want to choose ℎh to be a small number so that the approximation is accurate. Here is some sample code that performs integration.
+
+def get_integral(func, a, b):
+    """Compute the area under `func` between x=a and x=b."""
+    h = 0.0001               # width of small rectangle
+    x = a                    # start at x=a
+    total = 0
+    while x <= b:            # continue until x=b
+        total += h*func(x)   # area of rect is base*height
+        x += h
+    return total
+
+def f(x): return x**2                    # some test function f(x)=x^2
+computed = get_integral(f, 1, 3)
+def actualF(x): return 1.0/3.0*x**3
+actual = actualF(3) - actualF(1)
+computed, actual    # = 8.6662, 8.6666   # pretty close if you ask me...
+You can find integral functions using the derivative formulas and some reverse engineering. To find an integral function of the function 𝑓(𝑥)f(x), we must find a function 𝐹(𝑥)F(x) such that 𝐹′(𝑥)=𝑓(𝑥)F′(x)=f(x). Suppose you’re given a function 𝑓(𝑥)f(x) and asked to find its integral function 𝐹(𝑥)F(x):
+
+𝐹(𝑥)=∫𝑓(𝑥)𝑑𝑥.
+F(x)=∫f(x)dx.
+This problem is equivalent to finding a function 𝐹(𝑥)F(x) whose derivative is 𝑓(𝑥)f(x):
+
+𝐹′(𝑥)=𝑓(𝑥).
+F′(x)=f(x).
+For example, suppose you want to find the indefinite integral ∫𝑥2𝑑𝑥∫x2dx. We can rephrase this problem as the search for some function 𝐹(𝑥)F(x) such that
+
+𝐹′(𝑥)=𝑥2.
+F′(x)=x2.
+Remembering the derivative formulas we saw above, you guess that 𝐹(𝑥)F(x) must contain an 𝑥3x3 term. Taking the derivative of a cubic term results in a quadratic term. Therefore, the function you are looking for has the form 𝐹(𝑥)=𝑐𝑥3F(x)=cx3, for some constant 𝑐c. Pick the constant 𝑐c that makes this equation true:
+
+𝐹′(𝑥)=3𝑐𝑥2=𝑥2.
+F′(x)=3cx2=x2.
+Solving 3𝑐=13c=1, we find 𝑐=13c=13 and so the integral function is
+
+𝐹(𝑥)=∫𝑥2𝑑𝑥=13𝑥3+𝐶.
+F(x)=∫x2dx=13x3+C.
+You can verify that 𝑑𝑑𝑥[13𝑥3+𝐶]=𝑥2ddx[13x3+C]=x2.
+
+You can also verify Integrals using maths. Here is a set of formulas for your reference
+
+Applications of integration
+Integral calculations have widespread applications to more areas of science than are practical to list here. Let’s explore a few examples related to probabilities.
+
+Computing probabilities
+A continuous random variable 𝑋X is described by its probability density function 𝑝(𝑥)p(x). A probability density function 𝑝(𝑥)p(x) is a positive function for which the total area under the curve is 11:
+
+𝑝(𝑥)≥0,∀𝑥and∫∞−∞𝑝(𝑥)𝑑𝑥=1.
+p(x)≥0,∀xand∫−∞∞p(x)dx=1.
+The probability of observing a value of 𝑋X between 𝑎a and 𝑏b is given by the integral
+
+Pr(𝑎≤𝑋≤𝑏)=∫𝑏𝑎𝑝(𝑥)𝑑𝑥.
+Pr(a≤X≤b)=∫abp(x)dx.
+Thus, the notion of integration is central to probability theory with continuous random variables.
+
+We also use integration to compute certain characteristic properties of the random variable. The expected value and the variance are two properties of any random variable 𝑋X that capture important aspects of its behaviour.
+
+Expected value
+The expected value of the random variable 𝑋X is computed using the formula
+
+𝜇=∫∞−∞𝑥𝑝(𝑥).
+μ=∫−∞∞xp(x).
+The expected value is a single number that tells us what value of 𝑋X we can expect to obtain on average from the random variable 𝑋X. The expected value is also called the average or the mean of the random variable 𝑋X.
+
+Variance
+The variance of the random variable 𝑋X is defined as follows:
+
+𝜎2=∫∞−∞(𝑥−𝜇)2𝑝(𝑥).
+σ2=∫−∞∞(x−μ)2p(x).
+The variance formula computes the expectation of the squared distance of the random variable 𝑋X from its expected value. The variance 𝜎2σ2, also denoted var(𝑋)var(X), gives us an indication of how clustered or spread the values of 𝑋X are. A small variance indicates the outcomes of 𝑋X are tightly clustered near the expected value 𝜇μ, while a large variance indicates the outcomes of 𝑋X are widely spread. The square root of the variance is called the standard deviation and is usually denoted 𝜎σ.
+
+The expected value 𝜇μ and the variance 𝜎2σ2 are two central concepts in probability theory and statistics because they allow us to characterize any random variable. The expected value is a measure of the central tendency of the random variable, while the variance 𝜎2σ2 measures its dispersion. Readers familiar with concepts from physics can think of the expected value as the centre of mass of the distribution, and the variance as the moment of inertia of the distribution.
+
+Linear algebra is a mathematical toolbox that offers helpful techniques for manipulating groups of numbers simultaneously. It provides structures like vectors and matrices (spreadsheets) to hold these numbers and new rules for how to add, subtract, multiply, and divide them. Here is a brief overview of basic linear algebra concepts taken from my linear algebra post on Medium.
+
+Vectors
+Vectors are 1-dimensional arrays of numbers or terms. In geometry, vectors store the magnitude and direction of a potential change to a point. The vector [3, -2] says go right 3 and down 2. A vector with more than one dimension is called a matrix.
+
+Notation
+There are a variety of ways to represent vectors. Here are a few you might come across in your reading.
+
+𝑣=⎡⎣⎢⎢123⎤⎦⎥⎥=⎛⎝⎜⎜123⎞⎠⎟⎟=[123]
+v=[123]=(123)=[123]
+Vectors in geometry
+Vectors typically represent movement from a point. They store both the magnitude and direction of potential changes to a point. The vector [-2,5] says move left 2 units and up 5 units [1].
+
+_images/vectors_geometry.png
+A vector can be applied to any point in space. The vector’s direction equals the slope of the hypotenuse created moving up 5 and left 2. Its magnitude equals the length of the hypotenuse.
+
+Scalar operations
+Scalar operations involve a vector and a number. You modify the vector in-place by adding, subtracting, or multiplying the number from all the values in the vector.
+
+⎡⎣⎢⎢222⎤⎦⎥⎥+1=⎡⎣⎢⎢333⎤⎦⎥⎥
+[222]+1=[333]
+Elementwise operations
+In elementwise operations like addition, subtraction, and division, values that correspond positionally are combined to produce a new vector. The 1st value in vector A is paired with the 1st value in vector B. The 2nd value is paired with the 2nd, and so on. This means the vectors must have equal dimensions to complete the operation.*
+
+[𝑎1𝑎2]+[𝑏1𝑏2]=[𝑎1+𝑏1𝑎2+𝑏2]
+[a1a2]+[b1b2]=[a1+b1a2+b2]
+y = np.array([1,2,3])
+x = np.array([2,3,4])
+y + x = [3, 5, 7]
+y - x = [-1, -1, -1]
+y / x = [.5, .67, .75]
+See below for details on broadcasting in numpy.
+
+Dot product
+The dot product of two vectors is a scalar. Dot product of vectors and matrices (matrix multiplication) is one of the most important operations in deep learning.
+
+[𝑎1𝑎2]⋅[𝑏1𝑏2]=𝑎1𝑏1+𝑎2𝑏2
+[a1a2]⋅[b1b2]=a1b1+a2b2
+y = np.array([1,2,3])
+x = np.array([2,3,4])
+np.dot(y,x) = 20
+Hadamard product
+Hadamard Product is elementwise multiplication and it outputs a vector.
+
+[𝑎1𝑎2]⊙[𝑏1𝑏2]=[𝑎1⋅𝑏1𝑎2⋅𝑏2]
+[a1a2]⊙[b1b2]=[a1⋅b1a2⋅b2]
+y = np.array([1,2,3])
+x = np.array([2,3,4])
+y * x = [2, 6, 12]
+Vector fields
+A vector field shows how far the point (x,y) would hypothetically move if we applied a vector function to it like addition or multiplication. Given a point in space, a vector field shows the power and direction of our proposed change at a variety of points in a graph [2].
+
+_images/vector_field.png
+This vector field is an interesting one since it moves in different directions depending the starting point. The reason is that the vector behind this field stores terms like 2𝑥2x or 𝑥2x2 instead of scalar values like -2 and 5. For each point on the graph, we plug the x-coordinate into 2𝑥2x or 𝑥2x2 and draw an arrow from the starting point to the new location. Vector fields are extremely useful for visualizing machine learning techniques like Gradient Descent.
+
+Matrices
+A matrix is a rectangular grid of numbers or terms (like an Excel spreadsheet) with special rules for addition, subtraction, and multiplication.
+
+Dimensions
+We describe the dimensions of a matrix in terms of rows by columns.
+
+⎡⎣⎢⎢25124−75⎤⎦⎥⎥[𝑎²182𝑎7𝑎−4810]
+[245−7125][a²2a8187a−410]
+The first has dimensions (3,2). The second (2,3).
+
+a = np.array([
+ [1,2,3],
+ [4,5,6]
+])
+a.shape == (2,3)
+b = np.array([
+ [1,2,3]
+])
+b.shape == (1,3)
+Scalar operations
+Scalar operations with matrices work the same way as they do for vectors. Simply apply the scalar to every element in the matrix — add, subtract, divide, multiply, etc.
+
+⎡⎣⎢⎢222333⎤⎦⎥⎥+1=⎡⎣⎢⎢333444⎤⎦⎥⎥
+[232323]+1=[343434]
+# Addition
+a = np.array(
+[[1,2],
+ [3,4]])
+a + 1
+[[2,3],
+ [4,5]]
+Elementwise operations
+In order to add, subtract, or divide two matrices they must have equal dimensions. We combine corresponding values in an elementwise fashion to produce a new matrix.
+
+[𝑎𝑐𝑏𝑑]+[1324]=[𝑎+1𝑐+3𝑏+2𝑑+4]
+[abcd]+[1234]=[a+1b+2c+3d+4]
+a = np.array([
+ [1,2],
+ [3,4]])
+b = np.array([
+ [1,2],
+ [3,4]])
+
+a + b
+[[2, 4],
+ [6, 8]]
+
+a — b
+[[0, 0],
+ [0, 0]]
+Hadamard product
+Hadamard product of matrices is an elementwise operation. Values that correspond positionally are multiplied to produce a new matrix.
+
+[𝑎1𝑎3𝑎2𝑎4]⊙[𝑏1𝑏3𝑏2𝑏4]=[𝑎1⋅𝑏1𝑎3⋅𝑏3𝑎2⋅𝑏2𝑎4⋅𝑏4]
+[a1a2a3a4]⊙[b1b2b3b4]=[a1⋅b1a2⋅b2a3⋅b3a4⋅b4]
+a = np.array(
+[[2,3],
+ [2,3]])
+b = np.array(
+[[3,4],
+ [5,6]])
+
+# Uses python's multiply operator
+a * b
+[[ 6, 12],
+ [10, 18]]
+In numpy you can take the Hadamard product of a matrix and vector as long as their dimensions meet the requirements of broadcasting.
+
+[𝑎1𝑎2]⊙[𝑏1𝑏3𝑏2𝑏4]=[𝑎1⋅𝑏1𝑎2⋅𝑏3𝑎1⋅𝑏2𝑎2⋅𝑏4]
+[a1a2]⊙[b1b2b3b4]=[a1⋅b1a1⋅b2a2⋅b3a2⋅b4]
+Matrix transpose
+Neural networks frequently process weights and inputs of different sizes where the dimensions do not meet the requirements of matrix multiplication. Matrix transposition (often denoted by a superscript ‘T’ e.g. M^T) provides a way to “rotate” one of the matrices so that the operation complies with multiplication requirements and can continue. There are two steps to transpose a matrix:
+
+Rotate the matrix right 90°
+Reverse the order of elements in each row (e.g. [a b c] becomes [c b a])
+As an example, transpose matrix M into T:
+
+⎡⎣⎢⎢𝑎𝑐𝑒𝑏𝑑𝑓⎤⎦⎥⎥⇒[𝑎𝑏𝑐𝑑𝑒𝑓]
+[abcdef]⇒[acebdf]
+a = np.array([
+   [1, 2],
+   [3, 4]])
+
+a.T
+[[1, 3],
+ [2, 4]]
+Matrix multiplication
+Matrix multiplication specifies a set of rules for multiplying matrices together to produce a new matrix.
+
+Rules
+
+Not all matrices are eligible for multiplication. In addition, there is a requirement on the dimensions of the resulting matrix output. Source.
+
+The number of columns of the 1st matrix must equal the number of rows of the 2nd
+The product of an M x N matrix and an N x K matrix is an M x K matrix. The new matrix takes the rows of the 1st and columns of the 2nd
+Steps
+
+Matrix multiplication relies on dot product to multiply various combinations of rows and columns. In the image below, taken from Khan Academy’s excellent linear algebra course, each entry in Matrix C is the dot product of a row in matrix A and a column in matrix B [3].
+
+_images/khan_academy_matrix_product.png
+The operation a1 · b1 means we take the dot product of the 1st row in matrix A (1, 7) and the 1st column in matrix B (3, 5).
+
+𝑎1⋅𝑏1=[17]⋅[35]=(1⋅3)+(7⋅5)=38
+a1⋅b1=[17]⋅[35]=(1⋅3)+(7⋅5)=38
+Here’s another way to look at it:
+
+⎡⎣⎢⎢𝑎𝑐𝑒𝑏𝑑𝑓⎤⎦⎥⎥⋅[1324]=⎡⎣⎢⎢1𝑎+3𝑏1𝑐+3𝑑1𝑒+3𝑓2𝑎+4𝑏2𝑐+4𝑑2𝑒+4𝑓⎤⎦⎥⎥
+[abcdef]⋅[1234]=[1a+3b2a+4b1c+3d2c+4d1e+3f2e+4f]
+Test yourself
+What are the dimensions of the matrix product?
+[1526]⋅[152637]=2 x 3
+[1256]⋅[123567]=2 x 3
+What are the dimensions of the matrix product?
+⎡⎣⎢⎢159261037114812⎤⎦⎥⎥⋅⎡⎣⎢⎢⎢⎢15322601⎤⎦⎥⎥⎥⎥=3 x 2
+[123456789101112]⋅[12563021]=3 x 2
+What is the matrix product?
+[2134]⋅[5345]=[19172324]
+[2314]⋅[5435]=[19231724]
+What is the matrix product?}
+[35]⋅[123]=[35610915]
+[35]⋅[123]=[36951015]
+What is the matrix product?
+[123]⋅⎡⎣⎢⎢456⎤⎦⎥⎥=[32]
+[123]⋅[456]=[32]
+Numpy
+Dot product
+Numpy uses the function np.dot(A,B) for both vector and matrix multiplication. It has some other interesting features and gotchas so I encourage you to read the documentation here before use.
+
+a = np.array([
+ [1, 2]
+ ])
+a.shape == (1,2)
+b = np.array([
+ [3, 4],
+ [5, 6]
+ ])
+b.shape == (2,2)
+
+# Multiply
+mm = np.dot(a,b)
+mm == [13, 16]
+mm.shape == (1,2)
+Broadcasting
+In numpy the dimension requirements for elementwise operations are relaxed via a mechanism called broadcasting. Two matrices are compatible if the corresponding dimensions in each matrix (rows vs rows, columns vs columns) meet the following requirements:
+
+The dimensions are equal, or
+One dimension is of size 1
+a = np.array([
+ [1],
+ [2]
+])
+b = np.array([
+ [3,4],
+ [5,6]
+])
+c = np.array([
+ [1,2]
+])
+
+# Same no. of rows
+# Different no. of columns
+# but a has one column so this works
+a * b
+[[ 3, 4],
+ [10, 12]]
+
+# Same no. of columns
+# Different no. of rows
+# but c has one row so this works
+b * c
+[[ 3, 8],
+ [5, 12]]
+
+# Different no. of columns
+# Different no. of rows
+# but both a and c meet the
+# size 1 requirement rule
+a + c
+[[2, 3],
+ [3, 4]]
+ 
+Algebra
+Symbol	Name	Description	Example
+(𝑓∘𝑔)(f∘g)	composite function	a nested function	(f ∘ g)(x) = f(g(x))
+∆∆	delta	change / difference	∆x = x_1 - x_0
+𝑒e	Euler’s number	e = 2.718281828	s = frac{1}{1+e^{-z}}
+∑∑	summation	sum of all values	∑ x_i = x_1 + x_2 + x_3
+∏∏	capital pi	product of all values	∏ x_i = x_1∙x_2∙x_3
+𝜖ϵ	epsilon	tiny number near 0	lr = 1e-4
+Calculus
+Symbol	Name	Description	Example
+𝑥′x′	derivative	first derivative	(x^2)’ = 2x
+𝑥″x″	second derivative	second derivative	(x^2)’’ = 2
+limlim	limit	function value as x approaches 0	 
+∇∇	nabla	gradient	∇f(a,b,c)
+Linear algebra
+Symbol	Name	Description	Example
+[][]	brackets	matrix or vector	𝑀=[135]M=[135]
+⋅⋅	dot	dot product	(𝑍=𝑋⋅𝑊(Z=X⋅W
+⊙⊙	hadamard	hadamard product	𝐴=𝐵⊙𝐶A=B⊙C
+𝑋𝑇XT	transpose	matrix transpose	𝑊𝑇⋅𝑋WT⋅X
+𝑥⃗ x→	vector	vector	𝑣=[123]v=[123]
+𝑋X	matrix	capitalized variables are matrices	𝑋,𝑊,𝐵X,W,B
+𝑥̂ x^	unit vector	vector of magnitude 1	𝑥̂ =[0.20.50.3]x^=[0.20.50.3]
+Probability
+Symbol	Name	Description	Example
+𝑃(𝐴)P(A)	probability	probability of event A	P(x=1) = 0.5
+Set theory
+Symbol	Name	Description	Example
+set	list of distinct elements	S = {1, 5, 7, 9}
+Statistics
+Symbol	Name	Description	Example
+μμ	population mean	mean of population values	 
+𝑥¯x¯	sample mean	mean of subset of population	 
+σ2σ2	population variance	variance of population value	 
+𝑠2s2	sample variance	variance of subset of population	 
+σ𝑋σX	standard deviation	population standard deviation	 
+𝑠s	sample std dev	standard deviation of sample	 
+ρ𝑋ρX	correlation	correlation of variables X and Y	 
+𝑥̃ x~	median	median value of variable x	 
+
+Neural Network
+Neural networks are a class of machine learning algorithms used to model complex patterns in datasets using multiple hidden layers and non-linear activation functions. A neural network takes an input, passes it through multiple layers of hidden neurons (mini-functions with unique coefficients that must be learned), and outputs a prediction representing the combined input of all the neurons.
+
+_images/neural_network_w_matrices.png
+Neural networks are trained iteratively using optimization techniques like gradient descent. After each cycle of training, an error metric is calculated based on the difference between prediction and target. The derivatives of this error metric are calculated and propagated back through the network using a technique called backpropagation. Each neuron’s coefficients (weights) are then adjusted relative to how much they contributed to the total error. This process is repeated iteratively until the network error drops below an acceptable threshold.
+
+Neuron
+A neuron takes a group of weighted inputs, applies an activation function, and returns an output.
+
+_images/neuron.png
+Inputs to a neuron can either be features from a training set or outputs from a previous layer’s neurons. Weights are applied to the inputs as they travel along synapses to reach the neuron. The neuron then applies an activation function to the “sum of weighted inputs” from each incoming synapse and passes the result on to all the neurons in the next layer.
+
+Synapse
+Synapses are like roads in a neural network. They connect inputs to neurons, neurons to neurons, and neurons to outputs. In order to get from one neuron to another, you have to travel along the synapse paying the “toll” (weight) along the way. Each connection between two neurons has a unique synapse with a unique weight attached to it. When we talk about updating weights in a network, we’re really talking about adjusting the weights on these synapses.
+
+Weights
+Weights are values that control the strength of the connection between two neurons. That is, inputs are typically multiplied by weights, and that defines how much influence the input will have on the output. In other words: when the inputs are transmitted between neurons, the weights are applied to the inputs along with an additional value (the bias)
+
+Bias
+Bias terms are additional constants attached to neurons and added to the weighted input before the activation function is applied. Bias terms help models represent patterns that do not necessarily pass through the origin. For example, if all your features were 0, would your output also be zero? Is it possible there is some base value upon which your features have an effect? Bias terms typically accompany weights and must also be learned by your model.
+
+Layers
+_images/neural_network_simple.png
+Input Layer
+
+Holds the data your model will train on. Each neuron in the input layer represents a unique attribute in your dataset (e.g. height, hair color, etc.).
+
+Hidden Layer
+
+Sits between the input and output layers and applies an activation function before passing on the results. There are often multiple hidden layers in a network. In traditional networks, hidden layers are typically fully-connected layers — each neuron receives input from all the previous layer’s neurons and sends its output to every neuron in the next layer. This contrasts with how convolutional layers work where the neurons send their output to only some of the neurons in the next layer.
+
+Output Layer
+
+The final layer in a network. It receives input from the previous hidden layer, optionally applies an activation function, and returns an output representing your model’s prediction.
+
+Weighted Input
+A neuron’s input equals the sum of weighted outputs from all neurons in the previous layer. Each input is multiplied by the weight associated with the synapse connecting the input to the current neuron. If there are 3 inputs or neurons in the previous layer, each neuron in the current layer will have 3 distinct weights — one for each each synapse.
+
+Single Input
+
+𝑍=𝐼𝑛𝑝𝑢𝑡⋅𝑊𝑒𝑖𝑔ℎ𝑡=𝑋𝑊
+Z=Input⋅Weight=XW
+Multiple Inputs
+
+𝑍=∑𝑖=1𝑛𝑥𝑖𝑤𝑖=𝑥1𝑤1+𝑥2𝑤2+𝑥3𝑤3
+Z=∑i=1nxiwi=x1w1+x2w2+x3w3
+Notice, it’s exactly the same equation we use with linear regression! In fact, a neural network with a single neuron is the same as linear regression! The only difference is the neural network post-processes the weighted input with an activation function.
+
+Activation Functions
+Activation functions live inside neural network layers and modify the data they receive before passing it to the next layer. Activation functions give neural networks their power — allowing them to model complex non-linear relationships. By modifying inputs with non-linear functions neural networks can model highly complex relationships between features. Popular activation functions include relu and sigmoid.
+
+Activation functions typically have the following properties:
+
+Non-linear - In linear regression we’re limited to a prediction equation that looks like a straight line. This is nice for simple datasets with a one-to-one relationship between inputs and outputs, but what if the patterns in our dataset were non-linear? (e.g. 𝑥2x2, sin, log). To model these relationships we need a non-linear prediction equation.¹ Activation functions provide this non-linearity.
+Continuously differentiable — To improve our model with gradient descent, we need our output to have a nice slope so we can compute error derivatives with respect to weights. If our neuron instead outputted 0 or 1 (perceptron), we wouldn’t know in which direction to update our weights to reduce our error.
+Fixed Range — Activation functions typically squash the input data into a narrow range that makes training the model more stable and efficient.
+Loss Functions
+A loss function, or cost function, is a wrapper around our model’s predict function that tells us “how good” the model is at making predictions for a given set of parameters. The loss function has its own curve and its own derivatives. The slope of this curve tells us how to change our parameters to make the model more accurate! We use the model to make predictions. We use the cost function to update our parameters. Our cost function can take a variety of forms as there are many different cost functions available. Popular loss functions include: MSE (L2) and Cross-entropy Loss.
+
+Optimization Algorithms
+Be the first to contribute!
+
+Gradient Accumulation
+Gradient accumulation is a mechanism to split the batch of samples—used for training a neural network—into several mini-batches of samples that will be run sequentially.
+
+This is used to enable using large batch sizes that require more GPU memory than available. Gradient accumulation helps in doing so by using mini-batches that require an amount of GPU memory that can be satisfied.
+
+Gradient accumulation means running all mini-batches sequentially (generally on the same GPU) while accumulating their calculated gradients and not updating the model variables - the weights and biases of the model. The model variables must not be updated during the accumulation in order to ensure all mini-batches use the same model variable values to calculate their gradients. Only after accumulating the gradients of all those mini-batches will we generate and apply the updates for the model variables.
+
+This results in the same updates for the model parameters as if we were to use the global batch.
+
+_images/gradient_accumulation.png
+More details, a technical and algorithmical deep-dive, how-to tutorials, and examples can be found at [2].
+
+Simple Network
+_images/neural_network_simple.png
+Forward propagation is how neural networks make predictions. Input data is “forward propagated” through the network layer by layer to the final layer which outputs a prediction. For the toy neural network above, a single pass of forward propagation translates mathematically to:
+
+𝑃𝑟𝑒𝑑𝑖𝑐𝑡𝑖𝑜𝑛=𝐴(𝐴(𝑋𝑊ℎ)𝑊𝑜)
+Prediction=A(A(XWh)Wo)
+Where 𝐴A is an activation function like ReLU, 𝑋X is the input and 𝑊ℎWh and 𝑊𝑜Wo are weights.
+
+Steps
+Calculate the weighted input to the hidden layer by multiplying 𝑋X by the hidden weight 𝑊ℎWh
+Apply the activation function and pass the result to the final layer
+Repeat step 2 except this time 𝑋X is replaced by the hidden layer’s output, 𝐻H
+Code
+Let’s write a method feed_forward() to propagate input data through our simple network of 1 hidden layer. The output of this method represents our model’s prediction.
+
+def relu(z):
+    return max(0,z)
+
+def feed_forward(x, Wh, Wo):
+    # Hidden layer
+    Zh = x * Wh
+    H = relu(Zh)
+
+    # Output layer
+    Zo = H * Wo
+    output = relu(Zo)
+    return output
+x is the input to the network, Zo and Zh are the weighted inputs and Wo and Wh are the weights.
+
+Larger Network
+The simple network above is helpful for learning purposes, but in reality neural networks are much larger and more complex. Modern neural networks have many more hidden layers, more neurons per layer, more variables per input, more inputs per training set, and more output variables to predict. Here is a slightly larger network that will introduce us to matrices and the matrix operations used to train arbitrarily large neural networks.
+
+_images/neural_network_w_matrices.png
+Architecture
+To accomodate arbitrarily large inputs or outputs, we need to make our code more extensible by adding a few parameters to our network’s __init__ method: inputLayerSize, hiddenLayerSize, outputLayerSize. We’ll still limit ourselves to using one hidden layer, but now we can create layers of different sizes to respond to the different inputs or outputs.
+
+INPUT_LAYER_SIZE = 1
+HIDDEN_LAYER_SIZE = 2
+OUTPUT_LAYER_SIZE = 2
+Weight Initialization
+Unlike last time where Wh and Wo were scalar numbers, our new weight variables will be numpy arrays. Each array will hold all the weights for its own layer — one weight for each synapse. Below we initialize each array with the numpy’s np.random.randn(rows, cols) method, which returns a matrix of random numbers drawn from a normal distribution with mean 0 and variance 1.
+
+def init_weights():
+    Wh = np.random.randn(INPUT_LAYER_SIZE, HIDDEN_LAYER_SIZE) * \
+                np.sqrt(2.0/INPUT_LAYER_SIZE)
+    Wo = np.random.randn(HIDDEN_LAYER_SIZE, OUTPUT_LAYER_SIZE) * \
+                np.sqrt(2.0/HIDDEN_LAYER_SIZE)
+Here’s an example calling random.randn():
+
+arr = np.random.randn(1, 2)
+
+print(arr)
+>> [[-0.36094661 -1.30447338]]
+
+print(arr.shape)
+>> (1,2)
+As you’ll soon see, there are strict requirements on the dimensions of these weight matrices. The number of rows must equal the number of neurons in the previous layer. The number of columns must match the number of neurons in the next layer.
+
+A good explanation of random weight initalization can be found in the Stanford CS231 course notes [1] chapter on neural networks.
+
+Bias Terms
+Bias terms allow us to shift our neuron’s activation outputs left and right. This helps us model datasets that do not necessarily pass through the origin.
+
+Using the numpy method np.full() below, we create two 1-dimensional bias arrays filled with the default value 0.2. The first argument to np.full is a tuple of array dimensions. The second is the default value for cells in the array.
+
+def init_bias():
+    Bh = np.full((1, HIDDEN_LAYER_SIZE), 0.1)
+    Bo = np.full((1, OUTPUT_LAYER_SIZE), 0.1)
+    return Bh, Bo
+Working with Matrices
+To take advantage of fast linear algebra techniques and GPUs, we need to store our inputs, weights, and biases in matrices. Here is our neural network diagram again with its underlying matrix representation.
+
+_images/nn_with_matrices_displayed.png
+What’s happening here? To better understand, let’s walk through each of the matrices in the diagram with an emphasis on their dimensions and why the dimensions are what they are. The matrix dimensions above flow naturally from the architecture of our network and the number of samples in our training set.
+
+Matrix dimensions
+
+Var	Name	Dimensions	Explanation
+X	Input	(3, 1)	Includes 3 rows of training data, and each row has 1 attribute (height, price, etc.)
+Wh	Hidden weights	(1, 2)	These dimensions are based on number of rows equals the number of attributes for the observations in our training set. The number columns equals the number of neurons in the hidden layer. The dimensions of the weights matrix between two layers is determined by the sizes of the two layers it connects. There is one weight for every input-to-neuron connection between the layers.
+Bh	Hidden bias	(1, 2)	Each neuron in the hidden layer has is own bias constant. This bias matrix is added to the weighted input matrix before the hidden layer applies ReLU.
+Zh	Hidden weighted input	(1, 2)	Computed by taking the dot product of X and Wh. The dimensions (1,2) are required by the rules of matrix multiplication. Zh takes the rows of in the inputs matrix and the columns of weights matrix. We then add the hidden layer bias matrix Bh.
+H	Hidden activations	(3, 2)	Computed by applying the Relu function to Zh. The dimensions are (3,2) — the number of rows matches the number of training samples and the number of columns equals the number of neurons. Each column holds all the activations for a specific neuron.
+Wo	Output weights	(2, 2)	The number of rows matches the number of hidden layer neurons and the number of columns equals the number of output layer neurons. There is one weight for every hidden-neuron-to-output-neuron connection between the layers.
+Bo	Output bias	(1, 2)	There is one column for every neuron in the output layer.
+Zo	Output weighted input	(3, 2)	Computed by taking the dot product of H and Wo and then adding the output layer bias Bo. The dimensions are (3,2) representing the rows of in the hidden layer matrix and the columns of output layer weights matrix.
+O	Output activations	(3, 2)	Each row represents a prediction for a single observation in our training set. Each column is a unique attribute we want to predict. Examples of two-column output predictions could be a company’s sales and units sold, or a person’s height and weight.
+Dynamic Resizing
+Before we continue I want to point out how the matrix dimensions change with changes to the network architecture or size of the training set. For example, let’s build a network with 2 input neurons, 3 hidden neurons, 2 output neurons, and 4 observations in our training set.
+
+_images/dynamic_resizing_neural_network_4_obs.png
+Now let’s use same number of layers and neurons but reduce the number of observations in our dataset to 1 instance:
+
+_images/dynamic_resizing_neural_network_1_obs.png
+As you can see, the number of columns in all matrices remains the same. The only thing that changes is the number of rows the layer matrices, which fluctuate with the size of the training set. The dimensions of the weight matrices remain unchanged. This shows us we can use the same network, the same lines of code, to process any number of observations.
+
+Refactoring Our Code
+Here is our new feed forward code which accepts matrices instead of scalar inputs.
+
+def feed_forward(X):
+    '''
+    X    - input matrix
+    Zh   - hidden layer weighted input
+    Zo   - output layer weighted input
+    H    - hidden layer activation
+    y    - output layer
+    yHat - output layer predictions
+    '''
+
+    # Hidden layer
+    Zh = np.dot(X, Wh) + Bh
+    H = relu(Zh)
+
+    # Output layer
+    Zo = np.dot(H, Wo) + Bo
+    yHat = relu(Zo)
+    return yHat
+Weighted input
+
+The first change is to update our weighted input calculation to handle matrices. Using dot product, we multiply the input matrix by the weights connecting them to the neurons in the next layer. Next we add the bias vector using matrix addition.
+
+Zh = np.dot(X, Wh) + Bh
+_images/neural_network_matrix_weighted_input.png
+The first column in Bh is added to all the rows in the first column of resulting dot product of X and Wh. The second value in Bh is added to all the elements in the second column. The result is a new matrix, Zh which has a column for every neuron in the hidden layer and a row for every observation in our dataset. Given all the layers in our network are fully-connected, there is one weight for every neuron-to-neuron connection between the layers.
+
+The same process is repeated for the output layer, except the input is now the hidden layer activation H and the weights Wo.
+
+ReLU activation
+
+The second change is to refactor ReLU to use elementwise multiplication on matrices. It’s only a small change, but its necessary if we want to work with matrices. np.maximum() is actually extensible and can handle both scalar and array inputs.
+
+def relu(Z):
+    return np.maximum(0, Z)
+In the hidden layer activation step, we apply the ReLU activation function np.maximum(0,Z) to every cell in the new matrix. The result is a matrix where all negative values have been replaced by 0. The same process is repeated for the output layer, except the input is Zo.
+
+Final Result
+Putting it all together we have the following code for forward propagation with matrices.
+
+INPUT_LAYER_SIZE = 1
+HIDDEN_LAYER_SIZE = 2
+OUTPUT_LAYER_SIZE = 2
+
+def init_weights():
+    Wh = np.random.randn(INPUT_LAYER_SIZE, HIDDEN_LAYER_SIZE) * \
+                np.sqrt(2.0/INPUT_LAYER_SIZE)
+    Wo = np.random.randn(HIDDEN_LAYER_SIZE, OUTPUT_LAYER_SIZE) * \
+                np.sqrt(2.0/HIDDEN_LAYER_SIZE)
+
+
+def init_bias():
+    Bh = np.full((1, HIDDEN_LAYER_SIZE), 0.1)
+    Bo = np.full((1, OUTPUT_LAYER_SIZE), 0.1)
+    return Bh, Bo
+
+def relu(Z):
+    return np.maximum(0, Z)
+
+def relu_prime(Z):
+    '''
+    Z - weighted input matrix
+
+    Returns gradient of Z where all
+    negative values are set to 0 and
+    all positive values set to 1
+    '''
+    Z[Z < 0] = 0
+    Z[Z > 0] = 1
+    return Z
+
+def cost(yHat, y):
+    cost = np.sum((yHat - y)**2) / 2.0
+    return cost
+
+def cost_prime(yHat, y):
+    return yHat - y
+
+def feed_forward(X):
+    '''
+    X    - input matrix
+    Zh   - hidden layer weighted input
+    Zo   - output layer weighted input
+    H    - hidden layer activation
+    y    - output layer
+    yHat - output layer predictions
+    '''
+
+    # Hidden layer
+    Zh = np.dot(X, Wh) + Bh
+    H = relu(Zh)
+
+    # Output layer
+    Zo = np.dot(H, Wo) + Bo
+    yHat = relu(Zo)
+    
+  Backpropagation
+Chain rule refresher
+Applying the chain rule
+Saving work with memoization
+Code example
+The goals of backpropagation are straightforward: adjust each weight in the network in proportion to how much it contributes to overall error. If we iteratively reduce each weight’s error, eventually we’ll have a series of weights that produce good predictions.
+
+Chain rule refresher
+As seen above, foward propagation can be viewed as a long series of nested equations. If you think of feed forward this way, then backpropagation is merely an application of Chain rule to find the Derivatives of cost with respect to any variable in the nested equation. Given a forward propagation function:
+
+𝑓(𝑥)=𝐴(𝐵(𝐶(𝑥)))
+f(x)=A(B(C(x)))
+A, B, and C are activation functions at different layers. Using the chain rule we easily calculate the derivative of 𝑓(𝑥)f(x) with respect to 𝑥x:
+
+𝑓′(𝑥)=𝑓′(𝐴)⋅𝐴′(𝐵)⋅𝐵′(𝐶)⋅𝐶′(𝑥)
+f′(x)=f′(A)⋅A′(B)⋅B′(C)⋅C′(x)
+How about the derivative with respect to B? To find the derivative with respect to B you can pretend 𝐵(𝐶(𝑥))B(C(x)) is a constant, replace it with a placeholder variable B, and proceed to find the derivative normally with respect to B.
+
+𝑓′(𝐵)=𝑓′(𝐴)⋅𝐴′(𝐵)
+f′(B)=f′(A)⋅A′(B)
+This simple technique extends to any variable within a function and allows us to precisely pinpoint the exact impact each variable has on the total output.
+
+Applying the chain rule
+Let’s use the chain rule to calculate the derivative of cost with respect to any weight in the network. The chain rule will help us identify how much each weight contributes to our overall error and the direction to update each weight to reduce our error. Here are the equations we need to make a prediction and calculate total error, or cost:
+
+_images/backprop_ff_equations.png
+Given a network consisting of a single neuron, total cost could be calculated as:
+
+𝐶𝑜𝑠𝑡=𝐶(𝑅(𝑍(𝑋𝑊)))
+Cost=C(R(Z(XW)))
+Using the chain rule we can easily find the derivative of Cost with respect to weight W.
+
+𝐶′(𝑊)=𝐶′(𝑅)⋅𝑅′(𝑍)⋅𝑍′(𝑊)=(𝑦̂ −𝑦)⋅𝑅′(𝑍)⋅𝑋
+C′(W)=C′(R)⋅R′(Z)⋅Z′(W)=(y^−y)⋅R′(Z)⋅X
+Now that we have an equation to calculate the derivative of cost with respect to any weight, let’s go back to our toy neural network example above
+
+_images/simple_nn_diagram_zo_zh_defined.png
+What is the derivative of cost with respect to 𝑊𝑜Wo?
+
+𝐶′(𝑊𝑂)=𝐶′(𝑦̂ )⋅𝑦̂ ′(𝑍𝑂)⋅𝑍′𝑂(𝑊𝑂)=(𝑦̂ −𝑦)⋅𝑅′(𝑍𝑂)⋅𝐻
+C′(WO)=C′(y^)⋅y^′(ZO)⋅ZO′(WO)=(y^−y)⋅R′(ZO)⋅H
+And how about with respect to 𝑊ℎWh? To find out we just keep going further back in our function applying the chain rule recursively until we get to the function that has the Wh term.
+
+𝐶′(𝑊ℎ)=𝐶′(𝑦̂ )⋅𝑂′(𝑍𝑜)⋅𝑍′𝑜(𝐻)⋅𝐻′(𝑍ℎ)⋅𝑍′ℎ(𝑊ℎ)=(𝑦̂ −𝑦)⋅𝑅′(𝑍𝑜)⋅𝑊𝑜⋅𝑅′(𝑍ℎ)⋅𝑋
+C′(Wh)=C′(y^)⋅O′(Zo)⋅Zo′(H)⋅H′(Zh)⋅Zh′(Wh)=(y^−y)⋅R′(Zo)⋅Wo⋅R′(Zh)⋅X
+And just for fun, what if our network had 10 hidden layers. What is the derivative of cost for the first weight 𝑤1w1?
+
+𝐶′(𝑤1)=𝑑𝐶𝑑𝑦̂ ⋅𝑑𝑦̂ 𝑑𝑍11⋅𝑑𝑍11𝑑𝐻10⋅𝑑𝐻10𝑑𝑍10⋅𝑑𝑍10𝑑𝐻9⋅𝑑𝐻9𝑑𝑍9⋅𝑑𝑍9𝑑𝐻8⋅𝑑𝐻8𝑑𝑍8⋅𝑑𝑍8𝑑𝐻7⋅𝑑𝐻7𝑑𝑍7⋅𝑑𝑍7𝑑𝐻6⋅𝑑𝐻6𝑑𝑍6⋅𝑑𝑍6𝑑𝐻5⋅𝑑𝐻5𝑑𝑍5⋅𝑑𝑍5𝑑𝐻4⋅𝑑𝐻4𝑑𝑍4⋅𝑑𝑍4𝑑𝐻3⋅𝑑𝐻3𝑑𝑍3⋅𝑑𝑍3𝑑𝐻2⋅𝑑𝐻2𝑑𝑍2⋅𝑑𝑍2𝑑𝐻1⋅𝑑𝐻1𝑑𝑍1⋅𝑑𝑍1𝑑𝑊1
+C′(w1)=dCdy^⋅dy^dZ11⋅dZ11dH10⋅dH10dZ10⋅dZ10dH9⋅dH9dZ9⋅dZ9dH8⋅dH8dZ8⋅dZ8dH7⋅dH7dZ7⋅dZ7dH6⋅dH6dZ6⋅dZ6dH5⋅dH5dZ5⋅dZ5dH4⋅dH4dZ4⋅dZ4dH3⋅dH3dZ3⋅dZ3dH2⋅dH2dZ2⋅dZ2dH1⋅dH1dZ1⋅dZ1dW1
+See the pattern? The number of calculations required to compute cost derivatives increases as our network grows deeper. Notice also the redundancy in our derivative calculations. Each layer’s cost derivative appends two new terms to the terms that have already been calculated by the layers above it. What if there was a way to save our work somehow and avoid these duplicate calculations?
+
+Saving work with memoization
+Memoization is a computer science term which simply means: don’t recompute the same thing over and over. In memoization we store previously computed results to avoid recalculating the same function. It’s handy for speeding up recursive functions of which backpropagation is one. Notice the pattern in the derivative equations below.
+
+_images/memoization.png
+Each of these layers is recomputing the same derivatives! Instead of writing out long derivative equations for every weight, we can use memoization to save our work as we backprop error through the network. To do this, we define 3 equations (below), which together encapsulate all the calculations needed for backpropagation. The math is the same, but the equations provide a nice shorthand we can use to track which calculations we’ve already performed and save our work as we move backwards through the network.
+
+_images/backprop_3_equations.png
+We first calculate the output layer error and pass the result to the hidden layer before it. After calculating the hidden layer error, we pass its error value back to the previous hidden layer before it. And so on and so forth. As we move back through the network we apply the 3rd formula at every layer to calculate the derivative of cost with respect that layer’s weights. This resulting derivative tells us in which direction to adjust our weights to reduce overall cost.
+
+Note
+
+The term layer error refers to the derivative of cost with respect to a layer’s input. It answers the question: how does the cost function output change when the input to that layer changes?
+
+Output layer error
+
+To calculate output layer error we need to find the derivative of cost with respect to the output layer input, 𝑍𝑜Zo. It answers the question — how are the final layer’s weights impacting overall error in the network? The derivative is then:
+
+𝐶′(𝑍𝑜)=(𝑦̂ −𝑦)⋅𝑅′(𝑍𝑜)
+C′(Zo)=(y^−y)⋅R′(Zo)
+To simplify notation, ml practitioners typically replace the (𝑦̂ −𝑦)∗𝑅′(𝑍𝑜)(y^−y)∗R′(Zo) sequence with the term 𝐸𝑜Eo. So our formula for output layer error equals:
+
+𝐸𝑜=(𝑦̂ −𝑦)⋅𝑅′(𝑍𝑜)
+Eo=(y^−y)⋅R′(Zo)
+Hidden layer error
+
+To calculate hidden layer error we need to find the derivative of cost with respect to the hidden layer input, Zh.
+
+𝐶′(𝑍ℎ)=(𝑦̂ −𝑦)⋅𝑅′(𝑍𝑜)⋅𝑊𝑜⋅𝑅′(𝑍ℎ)
+C′(Zh)=(y^−y)⋅R′(Zo)⋅Wo⋅R′(Zh)
+Next we can swap in the 𝐸𝑜Eo term above to avoid duplication and create a new simplified equation for Hidden layer error:
+
+𝐸ℎ=𝐸𝑜⋅𝑊𝑜⋅𝑅′(𝑍ℎ)
+Eh=Eo⋅Wo⋅R′(Zh)
+This formula is at the core of backpropagation. We calculate the current layer’s error, and pass the weighted error back to the previous layer, continuing the process until we arrive at our first hidden layer. Along the way we update the weights using the derivative of cost with respect to each weight.
+
+Derivative of cost with respect to any weight
+
+Let’s return to our formula for the derivative of cost with respect to the output layer weight 𝑊𝑜Wo.
+
+𝐶′(𝑊𝑂)=(𝑦̂ −𝑦)⋅𝑅′(𝑍𝑂)⋅𝐻
+C′(WO)=(y^−y)⋅R′(ZO)⋅H
+We know we can replace the first part with our equation for output layer error 𝐸𝑜Eo. H represents the hidden layer activation.
+
+𝐶′(𝑊𝑜)=𝐸𝑜⋅𝐻
+C′(Wo)=Eo⋅H
+So to find the derivative of cost with respect to any weight in our network, we simply multiply the corresponding layer’s error times its input (the previous layer’s output).
+
+𝐶′(𝑤)=𝐶𝑢𝑟𝑟𝑒𝑛𝑡𝐿𝑎𝑦𝑒𝑟𝐸𝑟𝑟𝑜𝑟⋅𝐶𝑢𝑟𝑟𝑒𝑛𝑡𝐿𝑎𝑦𝑒𝑟𝐼𝑛𝑝𝑢𝑡
+C′(w)=CurrentLayerError⋅CurrentLayerInput
+Note
+
+Input refers to the activation from the previous layer, not the weighted input, Z.
+
+Summary
+
+Here are the final 3 equations that together form the foundation of backpropagation.
+
+_images/backprop_final_3_deriv_equations.png
+Here is the process visualized using our toy neural network example above.
+
+_images/backprop_visually.png
+Code example
+def relu_prime(z):
+    if z > 0:
+        return 1
+    return 0
+
+def cost(yHat, y):
+    return 0.5 * (yHat - y)**2
+
+def cost_prime(yHat, y):
+    return yHat - y
+
+def backprop(x, y, Wh, Wo, lr):
+    yHat = feed_forward(x, Wh, Wo)
+
+    # Layer Error
+    Eo = (yHat - y) * relu_prime(Zo)
+    Eh = Eo * Wo * relu_prime(Zh)
+
+    # Cost derivative for weights
+    dWo = Eo * H
+    dWh = Eh * x
+
+    # Update weights
+    Wh -= lr * dWh
+    Wo -= lr * dWo
+
+Linear
+A straight line function where activation is proportional to input ( which is the weighted sum from neuron ).
+
+Function	Derivative
+𝑅(𝑧,𝑚)={𝑧∗𝑚}
+R(z,m)={z∗m}
+𝑅′(𝑧,𝑚)={𝑚}
+R′(z,m)={m}
+_images/linear.png	_images/linear_prime.png
+def linear(z,m):
+	return m*z
+def linear_prime(z,m):
+	return m
+Pros
+
+It gives a range of activations, so it is not binary activation.
+We can definitely connect a few neurons together and if more than 1 fires, we could take the max ( or softmax) and decide based on that.
+Cons
+
+For this function, derivative is a constant. That means, the gradient has no relationship with X.
+It is a constant gradient and the descent is going to be on constant gradient.
+If there is an error in prediction, the changes made by back propagation is constant and not depending on the change in input delta(x) !
+ELU
+Exponential Linear Unit or its widely known name ELU is a function that tend to converge cost to zero faster and produce more accurate results. Different to other activation functions, ELU has a extra alpha constant which should be positive number.
+
+ELU is very similiar to RELU except negative inputs. They are both in identity function form for non-negative inputs. On the other hand, ELU becomes smooth slowly until its output equal to -α whereas RELU sharply smoothes.
+
+Function	Derivative
+𝑅(𝑧)={𝑧α.(𝑒𝑧–1)𝑧>0𝑧<=0}
+R(z)={zz>0α.(ez–1)z<=0}
+𝑅′(𝑧)={1α.𝑒𝑧𝑧>0𝑧<0}
+R′(z)={1z>0α.ezz<0}
+_images/elu.png	_images/elu_prime.png
+def elu(z,alpha):
+	return z if z >= 0 else alpha*(e^z -1)
+def elu_prime(z,alpha):
+	return 1 if z > 0 else alpha*np.exp(z)
+Pros
+
+ELU becomes smooth slowly until its output equal to -α whereas RELU sharply smoothes.
+ELU is a strong alternative to ReLU.
+Unlike to ReLU, ELU can produce negative outputs.
+Cons
+
+For x > 0, it can blow up the activation with the output range of [0, inf].
+ReLU
+A recent invention which stands for Rectified Linear Units. The formula is deceptively simple: 𝑚𝑎𝑥(0,𝑧)max(0,z). Despite its name and appearance, it’s not linear and provides the same benefits as Sigmoid but with better performance.
+
+Function	Derivative
+𝑅(𝑧)={𝑧0𝑧>0𝑧<=0}
+R(z)={zz>00z<=0}
+𝑅′(𝑧)={10𝑧>0𝑧<0}
+R′(z)={1z>00z<0}
+_images/relu.png	_images/relu_prime.png
+def relu(z):
+  return max(0, z)
+def relu_prime(z):
+  return 1 if z > 0 else 0
+Pros
+
+It avoids and rectifies vanishing gradient problem.
+ReLu is less computationally expensive than tanh and sigmoid because it involves simpler mathematical operations.
+Cons
+
+One of its limitation is that it should only be used within Hidden layers of a Neural Network Model.
+Some gradients can be fragile during training and can die. It can cause a weight update which will makes it never activate on any data point again. Simply saying that ReLu could result in Dead Neurons.
+In another words, For activations in the region (x<0) of ReLu, gradient will be 0 because of which the weights will not get adjusted during descent. That means, those neurons which go into that state will stop responding to variations in error/ input ( simply because gradient is 0, nothing changes ). This is called dying ReLu problem.
+The range of ReLu is [0, inf). This means it can blow up the activation.
+Further reading
+
+Deep Sparse Rectifier Neural Networks Glorot et al., (2011)
+Yes You Should Understand Backprop, Karpathy (2016)
+LeakyReLU
+LeakyRelu is a variant of ReLU. Instead of being 0 when 𝑧<0z<0, a leaky ReLU allows a small, non-zero, constant gradient 𝛼α (Normally, 𝛼=0.01α=0.01). However, the consistency of the benefit across tasks is presently unclear. [1]
+
+Function	Derivative
+𝑅(𝑧)={𝑧𝛼𝑧𝑧>0𝑧<=0}
+R(z)={zz>0αzz<=0}
+𝑅′(𝑧)={1𝛼𝑧>0𝑧<0}
+R′(z)={1z>0αz<0}
+_images/leakyrelu.png	_images/leakyrelu_prime.png
+def leakyrelu(z, alpha):
+	return max(alpha * z, z)
+def leakyrelu_prime(z, alpha):
+	return 1 if z > 0 else alpha
+Pros
+
+Leaky ReLUs are one attempt to fix the “dying ReLU” problem by having a small negative slope (of 0.01, or so).
+Cons
+
+As it possess linearity, it can’t be used for the complex Classification. It lags behind the Sigmoid and Tanh for some of the use cases.
+Further reading
+
+Delving Deep into Rectifiers: Surpassing Human-Level Performance on ImageNet Classification, Kaiming He et al. (2015)
+Sigmoid
+Sigmoid takes a real value as input and outputs another value between 0 and 1. It’s easy to work with and has all the nice properties of activation functions: it’s non-linear, continuously differentiable, monotonic, and has a fixed output range.
+
+Function	Derivative
+𝑆(𝑧)=11+𝑒−𝑧
+S(z)=11+e−z
+𝑆′(𝑧)=𝑆(𝑧)⋅(1−𝑆(𝑧))
+S′(z)=S(z)⋅(1−S(z))
+_images/sigmoid.png	_images/sigmoid_prime.png
+def sigmoid(z):
+  return 1.0 / (1 + np.exp(-z))
+def sigmoid_prime(z):
+  return sigmoid(z) * (1-sigmoid(z))
+Pros
+
+It is nonlinear in nature. Combinations of this function are also nonlinear!
+It will give an analog activation unlike step function.
+It has a smooth gradient too.
+It’s good for a classifier.
+The output of the activation function is always going to be in range (0,1) compared to (-inf, inf) of linear function. So we have our activations bound in a range. Nice, it won’t blow up the activations then.
+Cons
+
+Towards either end of the sigmoid function, the Y values tend to respond very less to changes in X.
+It gives rise to a problem of “vanishing gradients”.
+Its output isn’t zero centered. It makes the gradient updates go too far in different directions. 0 < output < 1, and it makes optimization harder.
+Sigmoids saturate and kill gradients.
+The network refuses to learn further or is drastically slow ( depending on use case and until gradient /computation gets hit by floating point value limits ).
+Further reading
+
+Yes You Should Understand Backprop, Karpathy (2016)
+Tanh
+Tanh squashes a real-valued number to the range [-1, 1]. It’s non-linear. But unlike Sigmoid, its output is zero-centered. Therefore, in practice the tanh non-linearity is always preferred to the sigmoid nonlinearity. [1]
+
+Function	Derivative
+𝑡𝑎𝑛ℎ(𝑧)=𝑒𝑧−𝑒−𝑧𝑒𝑧+𝑒−𝑧
+tanh(z)=ez−e−zez+e−z
+𝑡𝑎𝑛ℎ′(𝑧)=1−𝑡𝑎𝑛ℎ(𝑧)2
+tanh′(z)=1−tanh(z)2
+_images/tanh.png	_images/tanh_prime.png
+def tanh(z):
+	return (np.exp(z) - np.exp(-z)) / (np.exp(z) + np.exp(-z))
+def tanh_prime(z):
+	return 1 - np.power(tanh(z), 2)
+Pros
+
+The gradient is stronger for tanh than sigmoid ( derivatives are steeper).
+Cons
+
+Tanh also has the vanishing gradient problem.
+Softmax
+Softmax function calculates the probabilities distribution of the event over ‘n’ different events. In general way of saying, this function will calculate the probabilities of each target class over all possible target classes. Later the calculated probabilities will be helpful for determining the target class for the given inputs.
+
+BatchNorm
+BatchNorm accelerates convergence by reducing internal covariate shift inside each batch. If the individual observations in the batch are widely different, the gradient updates will be choppy and take longer to converge.
+
+The batch norm layer normalizes the incoming activations and outputs a new batch where the mean equals 0 and standard deviation equals 1. It subtracts the mean and divides by the standard deviation of the batch.
+
+Code
+
+Code example from Agustinus Kristiadi
+
+def BatchNorm():
+    # From https://wiseodd.github.io/techblog/2016/07/04/batchnorm/
+    # TODO: Add doctring for variable names. Add momentum to init.
+    def __init__(self):
+        pass
+
+    def forward(self, X, gamma, beta):
+        mu = np.mean(X, axis=0)
+        var = np.var(X, axis=0)
+
+        X_norm = (X - mu) / np.sqrt(var + 1e-8)
+        out = gamma * X_norm + beta
+
+        cache = (X, X_norm, mu, var, gamma, beta)
+
+        return out, cache, mu, var
+
+    def backward(self, dout, cache):
+        X, X_norm, mu, var, gamma, beta = cache
+
+        N, D = X.shape
+
+        X_mu = X - mu
+        std_inv = 1. / np.sqrt(var + 1e-8)
+
+        dX_norm = dout * gamma
+        dvar = np.sum(dX_norm * X_mu, axis=0) * -.5 * std_inv**3
+        dmu = np.sum(dX_norm * -std_inv, axis=0) + dvar * np.mean(-2. * X_mu, axis=0)
+
+        dX = (dX_norm * std_inv) + (dvar * 2 * X_mu / N) + (dmu / N)
+        dgamma = np.sum(dout * X_norm, axis=0)
+        dbeta = np.sum(dout, axis=0)
+
+        return dX, dgamma, dbeta
+Further reading
+
+Original Paper
+Implementing BatchNorm in Neural Net
+Understanding the backward pass through Batch Norm
+Convolution
+In CNN, a convolution is a linear operation that involves multiplication of weight (kernel/filter) with the input and it does most of the heavy lifting job.
+
+Convolution layer consists of 2 major component 1. Kernel(Filter) 2. Stride
+
+Kernel (Filter): A convolution layer can have more than one filter. The size of the filter should be smaller than the size of input dimension. It is intentional as it allows filter to be applied multiple times at difference point (position) on the input.Filters are helpful in understanding and identifying important features from given input. By applying different filters (more than one filter) on the same input helps in extracting different features from given input. Output from multiplying filter with the input gives Two dimensional array. As such, the output array from this operation is called “Feature Map”.
+Stride: This property controls the movement of filter over input. when the value is set to 1, then filter moves 1 column at a time over input. When the value is set to 2 then the filer jump 2 columns at a time as filter moves over the input.
+Code
+
+# this code demonstate on how Convolution works
+# Assume we have a image of 4 X 4 and a filter fo 2 X 2 and Stride = 1
+
+def conv_filter_ouput(input_img_section,filter_value):
+      # this method perfromas the multiplication of input and filter
+      # returns singular value
+
+      value = 0
+      for i in range(len(filter_value)):
+            for j in range(len(filter_value[0])):
+                  value = value + (input_img_section[i][j]*filter_value[i][j])
+      return value
+
+img_input = [[260.745, 261.332, 112.27 , 262.351],
+ [260.302, 208.802, 139.05 , 230.709],
+ [261.775,  93.73 , 166.118, 122.847],
+ [259.56 , 232.038, 262.351, 228.937]]
+
+filter = [[1,0],
+   [0,1]]
+
+filterX,filterY = len(filter),len(filter[0])
+filtered_result = []
+for i in range(0,len(img_mx)-filterX+1):
+clm = []
+for j in range(0,len(img_mx[0])-filterY+1):
+      clm.append(conv_filter_ouput(img_mx[i:i+filterX,j:j+filterY],filter))
+filtered_result.append(clm)
+
+print(filtered_result)
+_images/cnn_filter_output.png
+Further reading
+
+cs231n reference
+Dropout
+A dropout layer takes the output of the previous layer’s activations and randomly sets a certain fraction (dropout rate) of the activatons to 0, cancelling or ‘dropping’ them out.
+
+It is a common regularization technique used to prevent overfitting in Neural Networks.
+
+_images/dropout_net.png
+The dropout rate is the tunable hyperparameter that is adjusted to measure performance with different values. It is typically set between 0.2 and 0.5 (but may be arbitrarily set).
+
+Dropout is only used during training; At test time, no activations are dropped, but scaled down by a factor of dropout rate. This is to account for more units being active during test time than training time.
+
+For example:
+
+A layer in a neural net outputs a tensor (matrix) A of shape (batch_size, num_features).
+The dropout rate of the layer is set to 0.5 (50%).
+A random 50% of the values in A will be set to 0.
+These will then be multiplied with the weight matrix to form the inputs to the next layer.
+The premise behind dropout is to introduce noise into a layer in order to disrupt any interdependent learning or coincidental patterns that may occur between units in the layer, that aren’t significant.
+
+Code
+
+# layer_output is a 2D numpy matrix of activations
+
+layer_output *= np.random.randint(0, high=2, size=layer_output.shape) # dropping out values
+
+# scaling up by dropout rate during TRAINING time, so no scaling needs to be done at test time
+layer_output /= 0.5
+# OR
+layer_output *= 0.5 # Scaling down during TEST time.
+[2]	
+This results in the following operation.
+
+_images/dropout.png
+All reference, images and code examples, unless mentioned otherwise, are from section 4.4.3 of Deep Learning for Python by François Chollet.
+
+[2]	
+Linear
+Be the first to contribute!
+
+LSTM
+Be the first to contribute!
+
+Pooling
+Pooling layers often take convolution layers as input. A complicated dataset with many object will require a large number of filters, each responsible finding pattern in an image so the dimensionally of convolutional layer can get large. It will cause an increase of parameters, which can lead to over-fitting. Pooling layers are methods for reducing this high dimensionally. Just like the convolution layer, there is kernel size and stride. The size of the kernel is smaller than the feature map. For most of the cases the size of the kernel will be 2X2 and the stride of 2. There are mainly two types of pooling layers.
+
+The first type is max pooling layer. Max pooling layer will take a stack of feature maps (convolution layer) as input. The value of the node in the max pooling layer is calculated by just the maximum of the pixels contained in the window.
+
+The other type of pooling layer is the Average Pooling layer. Average pooling layer calculates the average of pixels contained in the window. Its not used often but you may see this used in applications for which smoothing an image is preferable.
+
+Code
+
+def max_pooling(feature_map, size=2, stride=2):
+    """
+    :param feature_map: Feature matrix of shape (height, width, layers)
+    :param size: size of kernal
+    :param stride: movement speed of kernal
+    :return: max-pooled feature vector
+    """
+    pool_shape = (feature_map.shape[0]//stride, feature_map.shape[1]//stride, feature_map.shape[-1]) #shape of output
+    pool_out = numpy.zeros(pool_shape)
+    for layer in range(feature_map.shape[-1]):
+            #for each layer
+            row = 0
+            for r in numpy.arange(0,feature_map.shape[0], stride):
+                col = 0
+                for c in numpy.arange(0, feature_map.shape[1], stride):
+                    pool_out[row, col, layer] = numpy.max([feature_map[c:c+size,  r:r+size, layer]])
+                    col = col + 1
+                row = row +1
+    return pool_out
+_images/maxpool.png
+
+Cross-Entropy
+Cross-entropy loss, or log loss, measures the performance of a classification model whose output is a probability value between 0 and 1. Cross-entropy loss increases as the predicted probability diverges from the actual label. So predicting a probability of .012 when the actual observation label is 1 would be bad and result in a high loss value. A perfect model would have a log loss of 0.
+
+_images/cross_entropy.png
+The graph above shows the range of possible loss values given a true observation (isDog = 1). As the predicted probability approaches 1, log loss slowly decreases. As the predicted probability decreases, however, the log loss increases rapidly. Log loss penalizes both types of errors, but especially those predictions that are confident and wrong!
+
+Cross-entropy and log loss are slightly different depending on context, but in machine learning when calculating error rates between 0 and 1 they resolve to the same thing.
+
+Code
+
+def CrossEntropy(yHat, y):
+    if y == 1:
+      return -log(yHat)
+    else:
+      return -log(1 - yHat)
+Math
+
+In binary classification, where the number of classes 𝑀M equals 2, cross-entropy can be calculated as:
+
+−(𝑦log(𝑝)+(1−𝑦)log(1−𝑝))
+−(ylog⁡(p)+(1−y)log⁡(1−p))
+If 𝑀>2M>2 (i.e. multiclass classification), we calculate a separate loss for each class label per observation and sum the result.
+
+−∑𝑐=1𝑀𝑦𝑜,𝑐log(𝑝𝑜,𝑐)
+−∑c=1Myo,clog⁡(po,c)
+Note
+
+M - number of classes (dog, cat, fish)
+log - the natural log
+y - binary indicator (0 or 1) if class label 𝑐c is the correct classification for observation 𝑜o
+p - predicted probability observation 𝑜o is of class 𝑐c
+Hinge
+Used for classification.
+
+Code
+
+def Hinge(yHat, y):
+    return np.max(0, 1 - yHat * y)
+Huber
+Typically used for regression. It’s less sensitive to outliers than the MSE as it treats error as square only inside an interval.
+
+𝐿𝛿={12(𝑦−𝑦̂ )2𝛿((𝑦−𝑦̂ )−12𝛿)𝑖𝑓∣∣(𝑦−𝑦̂ )∣∣<𝛿𝑜𝑡ℎ𝑒𝑟𝑤𝑖𝑠𝑒
+Lδ={12(y−y^)2if|(y−y^)|<δδ((y−y^)−12δ)otherwise
+Code
+
+def Huber(yHat, y, delta=1.):
+    return np.where(np.abs(y-yHat) < delta,.5*(y-yHat)**2 , delta*(np.abs(y-yHat)-0.5*delta))
+Further information can be found at Huber Loss in Wikipedia.
+
+Kullback-Leibler
+Code
+
+def KLDivergence(yHat, y):
+    """
+    :param yHat:
+    :param y:
+    :return: KLDiv(yHat || y)
+    """
+    return np.sum(yHat * np.log((yHat / y)))
+MAE (L1)
+Mean Absolute Error, or L1 loss. Excellent overview below [6] and [10].
+
+Code
+
+def L1(yHat, y):
+    return np.sum(np.absolute(yHat - y))
+MSE (L2)
+Mean Squared Error, or L2 loss. Excellent overview below [6] and [10].
+
+def MSE(yHat, y):
+    return np.sum((yHat - y)**2) / y.size
+def MSE_prime(yHat, y):
+    return yHat - y
+    
+Optimizers
+What is Optimizer ?
+
+It is very important to tweak the weights of the model during the training process, to make our predictions as correct and optimized as possible. But how exactly do you do that? How do you change the parameters of your model, by how much, and when?
+
+Best answer to all above question is optimizers. They tie together the loss function and model parameters by updating the model in response to the output of the loss function. In simpler terms, optimizers shape and mold your model into its most accurate possible form by futzing with the weights. The loss function is the guide to the terrain, telling the optimizer when it’s moving in the right or wrong direction.
+
+Below are list of example optimizers
+
+Adagrad
+Adadelta
+Adam
+Conjugate Gradients
+BFGS
+Momentum
+Nesterov Momentum
+Newton’s Method
+RMSProp
+SGD
+_images/optimizers.gif
+Image Credit: CS231n
+
+Adagrad
+Adagrad (short for adaptive gradient) adaptively sets the learning rate according to a parameter.
+
+Parameters that have higher gradients or frequent updates should have slower learning rate so that we do not overshoot the minimum value.
+Parameters that have low gradients or infrequent updates should faster learning rate so that they get trained quickly.
+It divides the learning rate by the sum of squares of all previous gradients of the parameter.
+When the sum of the squared past gradients has a high value, it basically divides the learning rate by a high value, so the learning rate will become less.
+Similarly, if the sum of the squared past gradients has a low value, it divides the learning rate by a lower value, so the learning rate value will become high.
+This implies that the learning rate is inversely proportional to the sum of the squares of all the previous gradients of the parameter.
+𝑔𝑖𝑡=∂(𝑤𝑖𝑡)∂𝑊𝑊=𝑊−𝛼∂(𝑤𝑖𝑡)∑𝑡𝑟=1(𝑔𝑖𝑟)2+𝜀‾‾‾‾‾‾‾‾‾‾‾‾‾‾√
+gti=∂J(wti)∂WW=W−α∂J(wti)∑r=1t(gri)2+ε
+Note
+
+𝑔𝑖𝑡gti - the gradient of a parameter, :math: `Theta ` at an iteration t.
+𝛼α - the learning rate
+𝜖ϵ - very small value to avoid dividing by zero
+def Adagrad(data):
+    gradient_sums = np.zeros(theta.shape[0])
+    for t in range(num_iterations):
+        gradients = compute_gradients(data, weights)
+        gradient_sums += gradients ** 2
+        gradient_update = gradients / (np.sqrt(gradient_sums + epsilon))
+        weights = weights - lr * gradient_update
+    return weights
+Adadelta
+AdaDelta belongs to the family of stochastic gradient descent algorithms, that provide adaptive techniques for hyperparameter tuning. Adadelta is probably short for ‘adaptive delta’, where delta here refers to the difference between the current weight and the newly updated weight.
+
+The main disadvantage in Adagrad is its accumulation of the squared gradients. During the training process, the accumulated sum keeps growing. From the above formala we can see that, As the accumulated sum increases learning rate to shrink and eventually become infinitesimally small, at which point the algorithm is no longer able to acquire additional knowledge.
+
+Adadelta is a more robust extension of Adagrad that adapts learning rates based on a moving window of gradient updates, instead of accumulating all past gradients. This way, Adadelta continues learning even when many updates have been done.
+
+With Adadelta, we do not even need to set a default learning rate, as it has been eliminated from the update rule.
+
+Implementation is something like this,
+
+𝑣𝑡=𝜌𝑣𝑡−1+(1−𝜌)∇2𝜃𝐽(𝜃)Δ𝜃𝜃𝑤𝑡=𝜌𝑤𝑡−1+(1−𝜌)Δ𝜃2=𝑤𝑡+𝜖‾‾‾‾‾‾√𝑣𝑡+𝜖‾‾‾‾‾‾√∇𝜃𝐽(𝜃)=𝜃−𝜂Δ𝜃
+vt=ρvt−1+(1−ρ)∇θ2J(θ)Δθ=wt+ϵvt+ϵ∇θJ(θ)θ=θ−ηΔθwt=ρwt−1+(1−ρ)Δθ2
+def Adadelta(weights, sqrs, deltas, rho, batch_size):
+    eps_stable = 1e-5
+    for weight, sqr, delta in zip(weights, sqrs, deltas):
+        g = weight.grad / batch_size
+        sqr[:] = rho * sqr + (1. - rho) * nd.square(g)
+        cur_delta = nd.sqrt(delta + eps_stable) / nd.sqrt(sqr + eps_stable) * g
+        delta[:] = rho * delta + (1. - rho) * cur_delta * cur_delta
+        # update weight in place.
+        weight[:] -= cur_delta
+Adam
+Adaptive Moment Estimation (Adam) combines ideas from both RMSProp and Momentum. It computes adaptive learning rates for each parameter and works as follows.
+
+First, it computes the exponentially weighted average of past gradients (𝑣𝑑𝑊vdW).
+Second, it computes the exponentially weighted average of the squares of past gradients (𝑠𝑑𝑊sdW).
+Third, these averages have a bias towards zero and to counteract this a bias correction is applied (𝑣𝑐𝑜𝑟𝑟𝑒𝑐𝑡𝑒𝑑𝑑𝑊vdWcorrected, 𝑠𝑐𝑜𝑟𝑟𝑒𝑐𝑡𝑒𝑑𝑑𝑊sdWcorrected).
+Lastly, the parameters are updated using the information from the calculated averages.
+𝑣𝑑𝑊=𝛽1𝑣𝑑𝑊+(1−𝛽1)∂∂𝑊𝑠𝑑𝑊=𝛽2𝑠𝑑𝑊+(1−𝛽2)(∂∂𝑊)2𝑣𝑐𝑜𝑟𝑟𝑒𝑐𝑡𝑒𝑑𝑑𝑊=𝑣𝑑𝑊1−(𝛽1)𝑡𝑠𝑐𝑜𝑟𝑟𝑒𝑐𝑡𝑒𝑑𝑑𝑊=𝑠𝑑𝑊1−(𝛽1)𝑡𝑊=𝑊−𝛼𝑣𝑐𝑜𝑟𝑟𝑒𝑐𝑡𝑒𝑑𝑑𝑊𝑠𝑐𝑜𝑟𝑟𝑒𝑐𝑡𝑒𝑑𝑑𝑊‾‾‾‾‾‾‾‾√+𝜀
+vdW=β1vdW+(1−β1)∂J∂WsdW=β2sdW+(1−β2)(∂J∂W)2vdWcorrected=vdW1−(β1)tsdWcorrected=sdW1−(β1)tW=W−αvdWcorrectedsdWcorrected+ε
+Note
+
+𝑣𝑑𝑊vdW - the exponentially weighted average of past gradients
+𝑠𝑑𝑊sdW - the exponentially weighted average of past squares of gradients
+𝛽1β1 - hyperparameter to be tuned
+𝛽2β2 - hyperparameter to be tuned
+∂∂𝑊∂J∂W - cost gradient with respect to current layer
+𝑊W - the weight matrix (parameter to be updated)
+𝛼α - the learning rate
+𝜖ϵ - very small value to avoid dividing by zero
+Conjugate Gradients
+Be the first to contribute!
+
+BFGS
+Be the first to contribute!
+
+Momentum
+Used in conjunction Stochastic Gradient Descent (sgd) or Mini-Batch Gradient Descent, Momentum takes into account past gradients to smooth out the update. This is seen in variable 𝑣v which is an exponentially weighted average of the gradient on previous steps. This results in minimizing oscillations and faster convergence.
+
+𝑣𝑑𝑊=𝛽𝑣𝑑𝑊+(1−𝛽)∂∂𝑊𝑊=𝑊−𝛼𝑣𝑑𝑊
+vdW=βvdW+(1−β)∂J∂WW=W−αvdW
+Note
+
+𝑣v - the exponentially weighted average of past gradients
+∂∂𝑊∂J∂W - cost gradient with respect to current layer weight tensor
+𝑊W - weight tensor
+𝛽β - hyperparameter to be tuned
+𝛼α - the learning rate
+Nesterov Momentum
+Be the first to contribute!
+
+Newton’s Method
+Be the first to contribute!
+
+RMSProp
+Another adaptive learning rate optimization algorithm, Root Mean Square Prop (RMSProp) works by keeping an exponentially weighted average of the squares of past gradients. RMSProp then divides the learning rate by this average to speed up convergence.
+
+𝑠𝑑𝑊=𝛽𝑠𝑑𝑊+(1−𝛽)(∂∂𝑊)2𝑊=𝑊−𝛼∂∂𝑊𝑠𝑐𝑜𝑟𝑟𝑒𝑐𝑡𝑒𝑑𝑑𝑊‾‾‾‾‾‾‾‾√+𝜀
+sdW=βsdW+(1−β)(∂J∂W)2W=W−α∂J∂WsdWcorrected+ε
+Note
+
+𝑠s - the exponentially weighted average of past squares of gradients
+∂∂𝑊∂J∂W - cost gradient with respect to current layer weight tensor
+𝑊W - weight tensor
+𝛽β - hyperparameter to be tuned
+𝛼α - the learning rate
+𝜖ϵ - very small value to avoid dividing by zero
+SGD
+SGD stands for Stochastic Gradient Descent.In Stochastic Gradient Descent, a few samples are selected randomly instead of the whole data set for each iteration. In Gradient Descent, there is a term called “batch” which denotes the total number of samples from a dataset that is used for calculating the gradient for each iteration. In typical Gradient Descent optimization, like Batch Gradient Descent, the batch is taken to be the whole dataset. Although, using the whole dataset is really useful for getting to the minima in a less noisy or less random manner, but the problem arises when our datasets get really huge.
+
+This problem is solved by Stochastic Gradient Descent. In SGD, it uses only a single sample to perform each iteration. The sample is randomly shuffled and selected for performing the iteration.
+
+Since only one sample from the dataset is chosen at random for each iteration, the path taken by the algorithm to reach the minima is usually noisier than your typical Gradient Descent algorithm. But that doesn’t matter all that much because the path taken by the algorithm does not matter, as long as we reach the minima and with significantly shorter training time.
+
+def SGD(data, batch_size, lr):
+    N = len(data)
+    np.random.shuffle(data)
+    mini_batches = np.array([data[i:i+batch_size]
+     for i in range(0, N, batch_size)])
+    for X,y in mini_batches:
+        backprop(X, y, lr)
+        
+Regularization
+Data Augmentation
+Dropout
+Early Stopping
+Ensembling
+Injecting Noise
+L1 Regularization
+L2 Regularization
+What is overfitting?
+
+From Wikipedia overfitting is,
+
+The production of an analysis that corresponds too closely or exactly to a particular set of data, and may therefore fail to fit additional data or predict future observations reliably
+
+What is Regularization?
+
+It is a Techniques for combating overfitting and improving training.
+
+Data Augmentation
+Having more data (dataset / samples) is a best way to get better consistent estimators (ML model). In the real world getting a large volume of useful data for training a model is cumbersome and labelling is an extremely tedious task.
+
+Either labelling requires more manual annotation, example - For creating a better image classifier we can use Mturk and involve more man power to generate dataset or doing survey in social media and asking people to participate and generate dataset. Above process can yield good dataset however those are difficult to carry and expensive. Having small dataset will lead to the well know Over fitting problem.
+
+Data Augmentation is one of the interesting regularization technique to resolve the above problem. The concept is very simple, this technique generates new training data from given original dataset. Dataset Augmentation provides a cheap and easy way to increase the amount of your training data.
+
+This technique can be used for both NLP and CV.
+
+In CV we can use the techniques like Jitter, PCA and Flipping. Similarly in NLP we can use the techniques like Synonym Replacement,Random Insertion, Random Deletion and Word Embeddings.
+
+It is worth knowing that Keras’ provided ImageDataGenerator for generating Data Augmentation.
+
+Sample code for random deletion
+
+def random_deletion(words, p):
+        """
+        Randomly delete words from the sentence with probability p
+        """
+
+        #obviously, if there's only one word, don't delete it
+        if len(words) == 1:
+                return words
+
+        #randomly delete words with probability p
+        new_words = []
+        for word in words:
+                r = random.uniform(0, 1)
+                if r > p:
+                        new_words.append(word)
+
+        #if you end up deleting all words, just return a random word
+        if len(new_words) == 0:
+                rand_int = random.randint(0, len(words)-1)
+                return [words[rand_int]]
+
+        return new_words
+Furthermore, when comparing two machine learning algorithms train both with either augmented or non-augmented dataset. Otherwise, no subjective decision can be made on which algorithm performed better
+
+Further reading
+
+NLP Data Augmentation
+CV Data Augmentation
+Regularization
+Dropout
+What is Dropout?
+
+Dropout is a regularization technique for reducing overfitting in neural networks by preventing complex co-adaptations on training data
+
+Dropout is a technique where randomly selected neurons are ignored during training. They are “dropped-out” randomly. This means that their contribution to the activation of downstream neurons is temporally removed on the forward pass and any weight updates are not applied to the neuron on the backward pass.
+
+Simply put, It is the process of ignoring some of the neurons in particular forward or backward pass.
+
+Dropout can be easily implemented by randomly selecting nodes to be dropped-out with a given probability (e.g. .1%) each weight update cycle.
+
+Most importantly Dropout is only used during the training of a model and is not used when evaluating the model.
+
+_images/regularization-dropout.PNG
+image from https://www.cs.toronto.edu/~hinton/absps/JMLRdropout.pdf
+
+import numpy as np
+A = np.arange(20).reshape((5,4))
+
+print("Given input: ")
+print(A)
+
+def dropout(X, drop_probability):
+    keep_probability = 1 - drop_probability
+    mask = np.random.uniform(0, 1.0, X.shape) < keep_probability
+    if keep_probability > 0.0:
+        scale = (1/keep_probability)
+    else:
+        scale = 0.0
+    return mask * X * scale
+
+print("\n After Dropout: ")
+print(dropout(A,0.5))
+output from above code
+
+Given input:
+[[ 0  1  2  3]
+[ 4  5  6  7]
+[ 8  9 10 11]
+[12 13 14 15]
+[16 17 18 19]]
+
+After Dropout:
+[[ 0.  2.  0.  0.]
+[ 8.  0.  0. 14.]
+[16. 18.  0. 22.]
+[24.  0.  0.  0.]
+[32. 34. 36.  0.]]
+Further reading
+
+Dropout https://www.cs.toronto.edu/~hinton/absps/JMLRdropout.pdf
+Early Stopping
+One of the biggest problem in training neural network is how long to train the model.
+
+Training too little will lead to underfit in train and test sets. Traning too much will have the overfit in training set and poor result in test sets.
+
+Here the challenge is to train the network long enough that it is capable of learning the mapping from inputs to outputs, but not training the model so long that it overfits the training data.
+
+One possible solution to solve this problem is to treat the number of training epochs as a hyperparameter and train the model multiple times with different values, then select the number of epochs that result in the best accuracy on the train or a holdout test dataset, But the problem is it requires multiple models to be trained and discarded.
+
+_images/earlystopping.png
+Clearly, after ‘t’ epochs, the model starts overfitting. This is clear by the increasing gap between the train and the validation error in the above plot.
+
+One alternative technique to prevent overfitting is use validation error to decide when to stop. This approach is called Early Stopping.
+
+While building the model, it is evaluated on the holdout validation dataset after each epoch. If the accuracy of the model on the validation dataset starts to degrade (e.g. loss begins to increase or accuracy begins to decrease), then the training process is stopped. This process is called Early stopping.
+
+Python implementation for Early stopping,
+
+def early_stopping(theta0, (x_train, y_train), (x_valid, y_valid), n = 1, p = 100):
+  """ The early stopping meta-algorithm for determining the best amount of time to train.
+      REF: Algorithm 7.1 in deep learning book.
+
+      Parameters:
+      n: int; Number of steps between evaluations.
+      p: int; "patience", the number of evaluations to observe worsening validataion set.
+      theta0: Network; initial network.
+      x_train: iterable; The training input set.
+      y_train: iterable; The training output set.
+      x_valid: iterable; The validation input set.
+      y_valid: iterable; The validation output set.
+
+      Returns:
+      theta_prime: Network object; The output network.
+      i_prime: int; The number of iterations for the output network.
+      v: float; The validation error for the output network.
+  """
+  # Initialize variables
+  theta = theta0.clone()       # The active network
+  i = 0                        # The number of training steps taken
+  j = 0                        # The number of evaluations steps since last update of theta_prime
+  v = np.inf                   # The best evaluation error observed thusfar
+  theta_prime = theta.clone()  # The best network found thusfar
+  i_prime = i                  # The index of theta_prime
+
+  while j < p:
+      # Update theta by running the training algorithm for n steps
+      for _ in range(n):
+          theta.train(x_train, y_train)
+
+      # Update Values
+      i += n
+      v_new = theta.error(x_valid, y_valid)
+
+      # If better validation error, then reset waiting time, save the network, and update the best error value
+      if v_new < v:
+          j = 0
+          theta_prime = theta.clone()
+          i_prime = i
+          v = v_new
+
+      # Otherwise, update the waiting time
+      else:
+          j += 1
+
+  return theta_prime, i_prime, v
+Further reading
+
+Regularization
+Ensembling
+Ensemble methods combine several machine learning techniques into one predictive model. There are a few different methods for ensembling, but the two most common are:
+
+Bagging
+
+Bagging stands for bootstrap aggregation. One way to reduce the variance of an estimate is to average together multiple estimates.
+It trains a large number of “strong” learners in parallel.
+A strong learner is a model that’s relatively unconstrained.
+Bagging then combines all the strong learners together in order to “smooth out” their predictions.
+Boosting
+
+Boosting refers to a family of algorithms that are able to convert weak learners to strong learners.
+Each one in the sequence focuses on learning from the mistakes of the one before it.
+Boosting then combines all the weak learners into a single strong learner.
+Bagging uses complex base models and tries to “smooth out” their predictions, while boosting uses simple base models and tries to “boost” their aggregate complexity.
+
+Injecting Noise
+Noise is often introduced to the inputs as a dataset augmentation strategy. When we have a small dataset the network may effectively memorize the training dataset. Instead of learning a general mapping from inputs to outputs, the model may learn the specific input examples and their associated outputs. One approach for improving generalization error and improving the structure of the mapping problem is to add random noise.
+
+Adding noise means that the network is less able to memorize training samples because they are changing all of the time, resulting in smaller network weights and a more robust network that has lower generalization error.
+
+Noise is only added during training. No noise is added during the evaluation of the model or when the model is used to make predictions on new data.
+
+Random noise can be added to other parts of the network during training. Some examples include:
+
+Noise Injection on Weights
+
+Noise added to weights can be interpreted as a more traditional form of regularization.
+In other words, it pushes the model to be relatively insensitive to small variations in the weights, finding points that are not merely minima, but minima surrounded by flat regions.
+Noise Injection on Outputs
+
+In the real world dataset, We can expect some amount of mistakes in the output labels. One way to remedy this is to explicitly model the noise on labels.
+An example for Noise Injection on Outputs is label smoothing
+Further reading
+
+Regularization
+L1 Regularization
+A regression model that uses L1 regularization technique is called Lasso Regression.
+
+Mathematical formula for L1 Regularization.
+
+Let’s define a model to see how L1 Regularization works. For simplicity, We define a simple linear regression model Y with one independent variable.
+
+In this model, W represent Weight, b represent Bias.
+
+𝑊=𝑤1,𝑤2...𝑤𝑛𝑋=𝑥1,𝑥2...𝑥𝑛
+W=w1,w2...wnX=x1,x2...xn
+and the predicted result is 𝑌ˆY^
+
+𝑌ˆ=𝑤1𝑥1+𝑤2𝑥2+...𝑤𝑛𝑥𝑛+𝑏
+Y^=w1x1+w2x2+...wnxn+b
+Following formula calculates the error without Regularization function
+
+𝐿𝑜𝑠𝑠=𝐸𝑟𝑟𝑜𝑟(𝑌,𝑌ˆ)
+Loss=Error(Y,Y^)
+Following formula calculates the error With L1 Regularization function
+
+𝐿𝑜𝑠𝑠=𝐸𝑟𝑟𝑜𝑟(𝑌−𝑌ˆ)+𝜆∑1𝑛|𝑤𝑖|
+Loss=Error(Y−Y^)+λ∑1n|wi|
+Note
+
+Here, If the value of lambda is Zero then above Loss function becomes Ordinary Least Square whereas very large value makes the coefficients (weights) zero hence it under-fits.
+
+One thing to note is that |𝑤||w| is differentiable when w!=0 as shown below,
+
+d|𝑤|d𝑤={1−1𝑤>0𝑤<0
+d|w|dw={1w>0−1w<0
+To understand the Note above,
+
+Let’s substitute the formula in finding new weights using Gradient Descent optimizer.
+
+𝑤𝑛𝑒𝑤=𝑤−𝜂∂𝐿1∂𝑤
+wnew=w−η∂L1∂w
+When we apply the L1 in above formula it becomes,
+
+𝑤𝑛𝑒𝑤=𝑤−𝜂.(𝐸𝑟𝑟𝑜𝑟(𝑌,𝑌ˆ)+𝜆d|𝑤|d𝑤)={𝑤−𝜂.(𝐸𝑟𝑟𝑜𝑟(𝑌,𝑌ˆ)+𝜆)𝑤−𝜂.(𝐸𝑟𝑟𝑜𝑟(𝑌,𝑌ˆ)−𝜆)𝑤>0𝑤<0
+wnew=w−η.(Error(Y,Y^)+λd|w|dw)={w−η.(Error(Y,Y^)+λ)w>0w−η.(Error(Y,Y^)−λ)w<0
+From the above formula,
+
+If w is positive, the regularization parameter 𝜆λ > 0 will push w to be less positive, by subtracting 𝜆λ from w.
+If w is negative, the regularization parameter 𝜆λ < 0 will push w to be less negative, by adding 𝜆λ to w. hence this has the effect of pushing w towards 0.
+Simple python implementation
+
+def update_weights_with_l1_regularization(features, targets, weights, lr,lambda):
+     '''
+     Features:(200, 3)
+     Targets: (200, 1)
+     Weights:(3, 1)
+     '''
+     predictions = predict(features, weights)
+
+     #Extract our features
+     x1 = features[:,0]
+     x2 = features[:,1]
+     x3 = features[:,2]
+
+     # Use matrix cross product (*) to simultaneously
+     # calculate the derivative for each weight
+     d_w1 = -x1*(targets - predictions)
+     d_w2 = -x2*(targets - predictions)
+     d_w3 = -x3*(targets - predictions)
+
+     # Multiply the mean derivative by the learning rate
+     # and subtract from our weights (remember gradient points in direction of steepest ASCENT)
+
+     weights[0][0] = (weights[0][0] - lr * np.mean(d_w1) - lambda) if weights[0][0] > 0 else (weights[0][0] - lr * np.mean(d_w1) + lambda)
+     weights[1][0] = (weights[1][0] - lr * np.mean(d_w2) - lambda) if weights[1][0] > 0 else (weights[1][0] - lr * np.mean(d_w2) + lambda)
+     weights[2][0] = (weights[2][0] - lr * np.mean(d_w3) - lambda) if weights[2][0] > 0 else (weights[2][0] - lr * np.mean(d_w3) + lambda)
+
+     return weights
+Use Case
+
+L1 Regularization (or varient of this concept) is a model of choice when the number of features are high, Since it provides sparse solutions. We can get computational advantage as the features with zero coefficients can simply be ignored.
+
+Further reading
+
+Linear Regression
+L2 Regularization
+A regression model that uses L2 regularization technique is called Ridge Regression. Main difference between L1 and L2 regularization is, L2 regularization uses “squared magnitude” of coefficient as penalty term to the loss function.
+
+Mathematical formula for L2 Regularization.
+
+Let’s define a model to see how L2 Regularization works. For simplicity, We define a simple linear regression model Y with one independent variable.
+
+In this model, W represent Weight, b represent Bias.
+
+𝑊=𝑤1,𝑤2...𝑤𝑛𝑋=𝑥1,𝑥2...𝑥𝑛
+W=w1,w2...wnX=x1,x2...xn
+and the predicted result is 𝑌ˆY^
+
+𝑌ˆ=𝑤1𝑥1+𝑤2𝑥2+...𝑤𝑛𝑥𝑛+𝑏
+Y^=w1x1+w2x2+...wnxn+b
+Following formula calculates the error without Regularization function
+
+𝐿𝑜𝑠𝑠=𝐸𝑟𝑟𝑜𝑟(𝑌,𝑌ˆ)
+Loss=Error(Y,Y^)
+Following formula calculates the error With L2 Regularization function
+
+𝐿𝑜𝑠𝑠=𝐸𝑟𝑟𝑜𝑟(𝑌−𝑌ˆ)+𝜆∑1𝑛𝑤2𝑖
+Loss=Error(Y−Y^)+λ∑1nwi2
+Note
+
+Here, if lambda is zero then you can imagine we get back OLS. However, if lambda is very large then it will add too much weight and it leads to under-fitting.
+
+To understand the Note above,
+
+Let’s substitute the formula in finding new weights using Gradient Descent optimizer.
+
+𝑤𝑛𝑒𝑤=𝑤−𝜂∂𝐿2∂𝑤
+wnew=w−η∂L2∂w
+When we apply the L2 in above formula it becomes,
+
+𝑤𝑛𝑒𝑤=𝑤−𝜂.(𝐸𝑟𝑟𝑜𝑟(𝑌,𝑌ˆ)+𝜆∂𝐿2∂𝑤)=𝑤−𝜂.(𝐸𝑟𝑟𝑜𝑟(𝑌,𝑌ˆ)+2𝜆𝑤)
+wnew=w−η.(Error(Y,Y^)+λ∂L2∂w)=w−η.(Error(Y,Y^)+2λw)
+Simple python implementation
+
+def update_weights_with_l2_regularization(features, targets, weights, lr,lambda):
+     '''
+     Features:(200, 3)
+     Targets: (200, 1)
+     Weights:(3, 1)
+     '''
+     predictions = predict(features, weights)
+
+     #Extract our features
+     x1 = features[:,0]
+     x2 = features[:,1]
+     x3 = features[:,2]
+
+     # Use matrix cross product (*) to simultaneously
+     # calculate the derivative for each weight
+     d_w1 = -x1*(targets - predictions)
+     d_w2 = -x2*(targets - predictions)
+     d_w3 = -x3*(targets - predictions)
+
+     # Multiply the mean derivative by the learning rate
+     # and subtract from our weights (remember gradient points in direction of steepest ASCENT)
+
+     weights[0][0] = weights[0][0] - lr * np.mean(d_w1) - 2 * lambda * weights[0][0]
+     weights[1][0] = weights[1][0] - lr * np.mean(d_w2) - 2 * lambda * weights[1][0]
+     weights[2][0] = weights[2][0] - lr * np.mean(d_w3) - 2 * lambda * weights[2][0]
+
+     return weights
+Use Case
+
+L2 regularization can address the multicollinearity problem by constraining the coefficient norm and keeping all the variables. L2 regression can be used to estimate the predictor importance and penalize predictors that are not important. One issue with co-linearity is that the variance of the parameter estimate is huge. In cases where the number of features are greater than the number of observations, the matrix used in the OLS may not be invertible but Ridge Regression enables this matrix to be inverted.
+
+Further reading
+
+Ridge Regression
+
+Architectures
+Autoencoder
+CNN
+GAN
+MLP
+RNN
+VAE
+Autoencoder
+TODO: Description of Autoencoder use case and basic architecture. Figure from [1].
+
+_images/autoencoder.png
+Model
+
+An example implementation in PyTorch.
+
+class Autoencoder(nn.Module):
+    def __init__(self, in_shape):
+        super().__init__()
+        c,h,w = in_shape
+        self.encoder = nn.Sequential(
+            nn.Linear(c*h*w, 128),
+            nn.ReLU(),
+            nn.Linear(128, 64),
+            nn.ReLU(),
+            nn.Linear(64, 12),
+            nn.ReLU()
+        )
+        self.decoder = nn.Sequential(
+            nn.Linear(12, 64),
+            nn.ReLU(),
+            nn.Linear(64, 128),
+            nn.ReLU(),
+            nn.Linear(128, c*h*w),
+            nn.Sigmoid()
+        )
+
+    def forward(self, x):
+        bs,c,h,w = x.size()
+        x = x.view(bs, -1)
+        x = self.encoder(x)
+        x = self.decoder(x)
+        x = x.view(bs, c, h, w)
+        return x
+Training
+
+def train(net, loader, loss_func, optimizer):
+    net.train()
+    for inputs, _ in loader:
+        inputs = Variable(inputs)
+
+        output = net(inputs)
+        loss = loss_func(output, inputs)
+
+        optimizer.zero_grad()
+        loss.backward()
+        optimizer.step()
+Further reading
+
+Convolutional Autoencoders
+Deep Learning Book
+CNN
+TODO: Description of CNN use case and basic architecture. Figure from [2].
+
+_images/cnn.jpeg
+Model
+
+An example implementation in PyTorch.
+
+Training
+
+Further reading
+
+CS231 Convolutional Networks
+Deep Learning Book
+GAN
+TODO: Description of GAN use case and basic architecture. Figure from [3].
+
+_images/gan.png
+Model
+
+TODO: An example implementation in PyTorch.
+
+Training
+
+TODO
+
+Further reading
+
+Generative Adversarial Networks
+Deep Learning Book
+MLP
+A Multi Layer Perceptron (MLP) is a neural network with only fully connected layers. Figure from [5].
+
+_images/mlp.jpg
+Model
+
+An example implementation on FMNIST dataset in PyTorch. Full Code
+
+The input to the network is a vector of size 28*28 i.e.(image from FashionMNIST dataset of dimension 28*28 pixels flattened to sigle dimension vector).
+2 fully connected hidden layers.
+Output layer with 10 outputs.(10 classes)
+class MLP(nn.Module):
+    def __init__(self):
+        super(MLP,self).__init__()
+        # define layers
+        self.fc1 = nn.Linear(in_features=28*28, out_features=500)
+        self.fc2 = nn.Linear(in_features=500, out_features=200)
+        self.fc3 = nn.Linear(in_features=200, out_features=100)
+        self.out = nn.Linear(in_features=100, out_features=10)
+
+
+    def forward(self, t):
+        # fc1  make input 1 dimentional
+        t = t.view(-1,28*28)
+        t = self.fc1(t)
+        t = F.relu(t)
+        # fc2
+        t = self.fc2(t)
+        t = F.relu(t)
+        # fc3
+        t = self.fc3(t)
+        t = F.relu(t)
+        # output
+        t = self.out(t)
+        return t
+Training
+
+def train(net, loader, loss_func, optimizer):
+    net.train()
+    n_batches = len(loader)
+    for inputs, targets in loader:
+        inputs = Variable(inputs)
+        targets = Variable(targets)
+
+        output = net(inputs)
+        loss = loss_func(output, targets)
+
+        optimizer.zero_grad()
+        loss.backward()
+        optimizer.step()
+         # print statistics
+    running_loss = loss.item()
+    print('Training loss: %.3f' %( running_loss))
+Evaluating
+
+def main():
+    train_set = torchvision.datasets.FashionMNIST(
+        root = './FMNIST',
+        train = True,
+        download = False,
+        transform = transforms.Compose([
+            transforms.ToTensor()
+        ])
+    )
+    mlp = MLP()
+    loader = torch.utils.data.DataLoader(train_set, batch_size = 1000)
+    optimizer = optim.Adam(mlp.parameters(), lr=0.01)
+    loss_func=nn.CrossEntropyLoss()
+    for i in range(0,15):
+        train(mlp,loader,loss_func,optimizer)
+    print("Finished Training")
+    torch.save(mlp.state_dict(), "./mlpmodel.pt")
+    test_set = torchvision.datasets.FashionMNIST(
+        root = './FMNIST',
+        train = False,
+        download = False,
+        transform = transforms.Compose([
+            transforms.ToTensor()
+        ])
+    )
+    testloader = torch.utils.data.DataLoader(test_set, batch_size=4)
+    correct = 0
+    total = 0
+    with torch.no_grad():
+        for data in testloader:
+            images, labels = data
+            outputs = mlp(images)
+            _, predicted = torch.max(outputs.data, 1)
+            total += labels.size(0)
+            correct += (predicted == labels).sum().item()
+    print('Accuracy of the network on the 10000 test images: %d %%' % (
+        100 * correct / total))
+Further reading
+
+TODO
+
+RNN
+Description of RNN use case and basic architecture.
+
+_images/rnn.png
+Model
+
+class RNN(nn.Module):
+    def __init__(self, n_classes):
+        super().__init__()
+        self.hid_fc = nn.Linear(185, 128)
+        self.out_fc = nn.Linear(185, n_classes)
+        self.softmax = nn.LogSoftmax()
+    
+    def forward(self, inputs, hidden):
+        inputs = inputs.view(1,-1)
+        combined = torch.cat([inputs, hidden], dim=1)
+        hid_out = self.hid_fc(combined)
+        out = self.out_fc(combined)
+        out = self.softmax(out)
+        return out, hid_out
+Training
+
+In this example, our input is a list of last names, where each name is a variable length array of one-hot encoded characters. Our target is is a list of indices representing the class (language) of the name.
+
+For each input name..
+Initialize the hidden vector
+Loop through the characters and predict the class
+Pass the final character’s prediction to the loss function
+Backprop and update the weights
+def train(model, inputs, targets):
+    for i in range(len(inputs)):
+        target = Variable(targets[i])
+        name = inputs[i]
+        hidden = Variable(torch.zeros(1,128))
+        model.zero_grad()
+        
+        for char in name:
+            input_ = Variable(torch.FloatTensor(char))
+            pred, hidden = model(input_, hidden)
+        
+        loss = criterion(pred, target)
+        loss.backward()
+        
+        for p in model.parameters():
+            p.data.add_(-.001, p.grad.data)
+Further reading
+
+Jupyter notebook
+Deep Learning Book
+VAE
+Autoencoders can encode an input image to a latent vector and decode it, but they can’t generate novel images. Variational Autoencoders (VAE) solve this problem by adding a constraint: the latent vector representation should model a unit gaussian distribution. The Encoder returns the mean and variance of the learned gaussian. To generate a new image, we pass a new mean and variance to the Decoder. In other words, we “sample a latent vector” from the gaussian and pass it to the Decoder. It also improves network generalization and avoids memorization. Figure from [4].
+
+_images/vae.png
+Loss Function
+
+The VAE loss function combines reconstruction loss (e.g. Cross Entropy, MSE) with KL divergence.
+
+def vae_loss(output, input, mean, logvar, loss_func):
+    recon_loss = loss_func(output, input)
+    kl_loss = torch.mean(0.5 * torch.sum(
+        torch.exp(logvar) + mean**2 - 1. - logvar, 1))
+    return recon_loss + kl_loss
+Model
+
+An example implementation in PyTorch of a Convolutional Variational Autoencoder.
+
+class VAE(nn.Module):
+    def __init__(self, in_shape, n_latent):
+        super().__init__()
+        self.in_shape = in_shape
+        self.n_latent = n_latent
+        c,h,w = in_shape
+        self.z_dim = h//2**2 # receptive field downsampled 2 times
+        self.encoder = nn.Sequential(
+            nn.BatchNorm2d(c),
+            nn.Conv2d(c, 32, kernel_size=4, stride=2, padding=1),  # 32, 16, 16
+            nn.BatchNorm2d(32),
+            nn.LeakyReLU(),
+            nn.Conv2d(32, 64, kernel_size=4, stride=2, padding=1),  # 32, 8, 8
+            nn.BatchNorm2d(64),
+            nn.LeakyReLU(),
+        )
+        self.z_mean = nn.Linear(64 * self.z_dim**2, n_latent)
+        self.z_var = nn.Linear(64 * self.z_dim**2, n_latent)
+        self.z_develop = nn.Linear(n_latent, 64 * self.z_dim**2)
+        self.decoder = nn.Sequential(
+            nn.ConvTranspose2d(64, 32, kernel_size=3, stride=2, padding=0),
+            nn.BatchNorm2d(32),
+            nn.ReLU(),
+            nn.ConvTranspose2d(32, 1, kernel_size=3, stride=2, padding=1),
+            CenterCrop(h,w),
+            nn.Sigmoid()
+        )
+
+    def sample_z(self, mean, logvar):
+        stddev = torch.exp(0.5 * logvar)
+        noise = Variable(torch.randn(stddev.size()))
+        return (noise * stddev) + mean
+
+    def encode(self, x):
+        x = self.encoder(x)
+        x = x.view(x.size(0), -1)
+        mean = self.z_mean(x)
+        var = self.z_var(x)
+        return mean, var
+
+    def decode(self, z):
+        out = self.z_develop(z)
+        out = out.view(z.size(0), 64, self.z_dim, self.z_dim)
+        out = self.decoder(out)
+        return out
+
+    def forward(self, x):
+        mean, logvar = self.encode(x)
+        z = self.sample_z(mean, logvar)
+        out = self.decode(z)
+        return out, mean, logvar
+Training
+
+def train(model, loader, loss_func, optimizer):
+    model.train()
+    for inputs, _ in loader:
+        inputs = Variable(inputs)
+
+        output, mean, logvar = model(inputs)
+        loss = vae_loss(output, inputs, mean, logvar, loss_func)
+
+        optimizer.zero_grad()
+        loss.backward()
+        optimizer.step()
+Further reading
+
+Original Paper
+VAE Explained
+Deep Learning Book
+
+Classification Algorithms
+Classification problems is when our output Y is always in categories like positive vs negative in terms of sentiment analysis, dog vs cat in terms of image classification and disease vs no disease in terms of medical diagnosis.
+
+Bayesian
+Overlaps..
+
+Boosting
+Be the first to contribute!
+
+Decision Trees
+ID3 decision tree: code example
+
+K-Nearest Neighbor
+Introduction
+
+K-Nearest Neighbor is a supervised learning algorithm both for classification and regression. The principle is to find the predefined number of training samples closest to the new point, and predict the label from these training samples[1].
+
+For example, when a new point comes, the algorithm will follow these steps:
+
+Calculate the Euclidean distance between the new point and all training data
+Pick the top-K closest training data
+For regression problem, take the average of the labels as the result; for classification problem, take the most common label of these labels as the result.
+Code
+
+Below is the Numpy implementation of K-Nearest Neighbor function. Refer to code example for details.
+
+def KNN(training_data, target, k, func):
+    """
+    training_data: all training data point
+    target: new point
+    k: user-defined constant, number of closest training data
+    func: functions used to get the the target label
+    """
+    # Step one: calculate the Euclidean distance between the new point and all training data
+    neighbors= []
+    for index, data in enumerate(training_data):
+        # distance between the target data and the current example from the data.
+        distance = euclidean_distance(data[:-1], target)
+        neighbors.append((distance, index))
+
+    # Step two: pick the top-K closest training data
+    sorted_neighbors = sorted(neighbors)
+    k_nearest = sorted_neighbors[:k]
+    k_nearest_labels = [training_data[i][1] for distance, i in k_nearest]
+
+    # Step three: For regression problem, take the average of the labels as the result;
+    #             for classification problem, take the most common label of these labels as the result.
+    return k_nearest, func(k_nearest_labels)
+Logistic Regression
+Be the first to contribute!
+
+Random Forests
+Random Forest Classifier using ID3 Tree: code example
+
